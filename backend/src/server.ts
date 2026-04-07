@@ -15,7 +15,7 @@ import uploadRoutes from './routes/upload';
 import errorHandler, { notFoundHandler } from './middleware/errorHandler';
 
 const app = express();
-const PORT = parseInt(process.env.PORT ?? '5000', 10);
+const PORT = parseInt(process.env.PORT ?? '5002', 10);
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 

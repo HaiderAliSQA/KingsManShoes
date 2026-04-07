@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Admin, ApiResponse } from '../../types';
 import { RootState } from '../store';
 
-const API_URL = import.meta.env['VITE_API_URL'] as string ?? 'http://localhost:5000';
+const API_URL = import.meta.env['VITE_API_URL'] as string ?? 'http://localhost:5002';
 
 interface LoginPayload {
   email: string;
