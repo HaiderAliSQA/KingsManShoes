@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: theme('colors.km-bg');
+    color: theme('colors.km-text');
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+  }
+  ::selection { background: theme('colors.km-gold'); color: white; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: theme('colors.km-surface-2'); }
+  ::-webkit-scrollbar-thumb { background: theme('colors.km-gold-light'); border-radius: 3px; }
+}
+
+/* ═══════════ COMPONENTS ═══════════ */
+@layer components {
+  /* Buttons */
+  .btn-gold {
+    font-family: 'DM Sans', sans-serif;
+    @apply bg-km-gold text-white font-medium px-8 py-3 text-sm tracking-widest uppercase transition-all duration-300 ease-in-out hover:bg-km-gold-light hover:scale-105 active:scale-95 cursor-pointer;
+  }
+  .btn-outline {
+    font-family: 'DM Sans', sans-serif;
+    @apply border border-km-text text-km-text px-8 py-3 text-sm tracking-widest uppercase bg-transparent transition-all duration-300 hover:bg-km-text hover:text-white hover:scale-105 active:scale-95 cursor-pointer;
+  }
+  
+  /* Inputs */
+  .input-dark {
+    font-family: 'DM Sans', sans-serif;
+    @apply w-full bg-white border border-km-border text-km-text px-4 py-3 text-sm placeholder-km-text-3 outline-none transition-all duration-200 focus:border-km-gold focus:ring-1 focus:ring-km-gold/30;
+  }
+  
+  /* Cards */
+  .card-dark {
+    @apply bg-white border border-km-border transition-all duration-300 hover:border-km-gold hover:shadow-product;
+  }
+
+  /* Admin */
+  .admin-sidebar-link {
+    font-family: 'DM Sans', sans-serif;
+    @apply flex items-center gap-3 px-4 py-3 text-km-admin-sidebar-text/70 text-sm tracking-wider transition-all duration-200 cursor-pointer border-l-2 border-transparent hover:text-white hover:bg-white/5;
+  }
+  .admin-sidebar-link.active {
+    @apply text-km-gold border-l-2 border-km-gold bg-white/5;
+  }
+}
+
+/* ═══════════ KEYFRAMES ═══════════ */
+@keyframes drawCircle {
+  from { stroke-dashoffset: 251; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes drawCheck {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════ UTILITY CLASSES ═══════════ */
+.animate-countUp  { animation: countUp 0.5s ease forwards; }
+.animate-drawCircle { animation: drawCircle 0.8s ease forwards; }
+.animate-drawCheck { stroke-dasharray: 100; animation: drawCheck 0.8s ease forwards 0.3s; }
+
+/* Skeleton shimmer */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #F5F3EE 25%, #ECEAE3 50%, #F5F3EE 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Scroll-reveal (apply via IntersectionObserver in useScrollReveal hook) */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.reveal-left { opacity: 0; transform: translateX(-30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+.reveal-right { opacity: 0; transform: translateX(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+/* Stagger delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
