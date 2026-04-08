@@ -36,20 +36,25 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<CartItem>) => {
+      const { productId, size, color, quantity, price } = action.payload;
+      const numPrice = Number(price);
+      const numQuantity = Number(quantity);
+
       const existingIndex = state.items.findIndex(
         (item) =>
-          item.productId === action.payload.productId &&
-          item.size === action.payload.size &&
-          item.color === action.payload.color
+          item.productId === productId &&
+          item.size === size &&
+          item.color === color
       );
 
       if (existingIndex >= 0) {
-        const existing = state.items[existingIndex];
-        if (existing) {
-          existing.quantity += action.payload.quantity;
-        }
+        state.items[existingIndex].quantity += numQuantity;
       } else {
-        state.items.push(action.payload);
+        state.items.push({
+          ...action.payload,
+          price: numPrice,
+          quantity: numQuantity,
+        });
       }
 
       saveCartToStorage(state.items);
@@ -135,13 +140,16 @@ export const selectCartItemCount = (state: { cart: CartState }): number =>
   state.cart.items.reduce((total, item) => total + item.quantity, 0);
 
 export const selectCartSubtotal = (state: { cart: CartState }): number =>
-  state.cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+  state.cart.items.reduce(
+    (total, item) => total + Number(item.price) * Number(item.quantity),
+    0
+  );
 
 export const selectCartDelivery = (state: { cart: CartState }): number =>
   selectCartSubtotal(state) >= 5000 ? 0 : 300;
 
 export const selectCartTotal = (state: { cart: CartState }): number =>
-  selectCartSubtotal(state) + selectCartDelivery(state);
+  Number(selectCartSubtotal(state)) + Number(selectCartDelivery(state));
 
 export const selectCartIsOpen = (state: { cart: CartState }): boolean =>
   state.cart.isOpen;

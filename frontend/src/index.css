@@ -55,46 +55,137 @@
   }
 }
 
-/* ═══════════ KEYFRAMES ═══════════ */
-@keyframes drawCircle {
-  from { stroke-dashoffset: 251; }
-  to   { stroke-dashoffset: 0; }
+/* ═══════════ ANIMATIONS ═══════════ */
+
+/* Scroll reveal base states */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+              transform 0.7s cubic-bezier(0.16,1,0.3,1);
 }
-@keyframes drawCheck {
-  from { stroke-dashoffset: 100; }
-  to   { stroke-dashoffset: 0; }
+.scroll-reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+              transform 0.7s cubic-bezier(0.16,1,0.3,1);
 }
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+.scroll-reveal-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+              transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.scroll-reveal-scale {
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 0.6s ease,
+              transform 0.6s cubic-bezier(0.16,1,0.3,1);
 }
 
-/* ═══════════ UTILITY CLASSES ═══════════ */
-.animate-countUp  { animation: countUp 0.5s ease forwards; }
-.animate-drawCircle { animation: drawCircle 0.8s ease forwards; }
-.animate-drawCheck { stroke-dasharray: 100; animation: drawCheck 0.8s ease forwards 0.3s; }
+/* Revealed state */
+.scroll-reveal.revealed,
+.scroll-reveal-left.revealed,
+.scroll-reveal-right.revealed,
+.scroll-reveal-scale.revealed {
+  opacity: 1;
+  transform: none;
+}
 
-/* Skeleton shimmer */
+/* Stagger delays */
+.stagger-1 { transition-delay: 0.05s; }
+.stagger-2 { transition-delay: 0.10s; }
+.stagger-3 { transition-delay: 0.15s; }
+.stagger-4 { transition-delay: 0.20s; }
+.stagger-5 { transition-delay: 0.25s; }
+.stagger-6 { transition-delay: 0.30s; }
+
+/* Magnetic button effect */
+.btn-magnetic {
+  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* Image hover zoom */
+.img-zoom {
+  overflow: hidden;
+}
+.img-zoom img {
+  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.img-zoom:hover img {
+  transform: scale(1.08);
+}
+
+/* Gold shimmer on text */
+@keyframes goldShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.text-gold-shimmer {
+  background: linear-gradient(90deg, #B8860B 0%, #D4A017 40%, #F5C842 50%, #D4A017 60%, #B8860B 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 3s linear infinite;
+}
+
+/* Underline draw animation */
+@keyframes drawUnderline {
+  from { width: 0; }
+  to   { width: 60px; }
+}
+.underline-draw {
+  display: block;
+  height: 2px;
+  background: #B8860B;
+  width: 0;
+  animation: drawUnderline 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+}
+
+/* Page loader */
+@keyframes loaderSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Product card hover lift */
+.product-card-hover {
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.3s ease;
+}
+.product-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+}
+
+/* Announcement bar scroll */
+@keyframes scrollText {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(-100%); }
+}
+.scroll-text {
+  display: inline-block;
+  animation: scrollText 20s linear infinite;
+  white-space: nowrap;
+}
+
+/* Navbar blur on scroll */
+.navbar-scrolled {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 2px 30px rgba(0,0,0,0.08) !important;
+}
+
+/* Skeleton shimmer premium */
 .skeleton-shimmer {
   background: linear-gradient(90deg, #F5F3EE 25%, #ECEAE3 50%, #F5F3EE 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 3px;
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-/* Scroll-reveal (apply via IntersectionObserver in useScrollReveal hook) */
-.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
-.reveal.visible { opacity: 1; transform: translateY(0); }
-
-.reveal-left { opacity: 0; transform: translateX(-30px); transition: opacity 0.8s ease, transform 0.8s ease; }
-.reveal-left.visible { opacity: 1; transform: translateX(0); }
-
-.reveal-right { opacity: 0; transform: translateX(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
-.reveal-right.visible { opacity: 1; transform: translateX(0); }
-
-/* Stagger delays */
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
-.delay-600 { animation-delay: 0.6s; }

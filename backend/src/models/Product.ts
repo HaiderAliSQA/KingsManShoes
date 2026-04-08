@@ -80,13 +80,16 @@ const productSchema = new Schema<IProduct>(
       type: Number,
       required: [true, 'Product price is required'],
       min: [0, 'Price cannot be negative'],
+      get: (v: number) => Math.round(v * 100) / 100, // 2 decimal places
     },
     compareAtPrice: {
       type: Number,
-      default: undefined,
+      default: null,
+      get: (v: number) => v ? Math.round(v * 100) / 100 : null,
     },
     category: {
       type: String,
+      required: [true, 'Category is required'],
       enum: [
         'skechers',
         'new-drops',
@@ -104,7 +107,8 @@ const productSchema = new Schema<IProduct>(
         'sneakers',
         'monaco',
       ],
-      required: [true, 'Category is required'],
+      lowercase: true,
+      trim: true,
     },
     sizes: {
       type: [productSizeSchema],
@@ -150,6 +154,8 @@ const productSchema = new Schema<IProduct>(
   },
   {
     timestamps: true,
+    toJSON: { getters: true },
+    toObject: { getters: true },
   }
 );
 

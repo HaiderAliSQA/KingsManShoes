@@ -115,7 +115,7 @@ const orderSchema = new Schema<IOrder>(
     },
     deliveryCharges: {
       type: Number,
-      required: true,
+      default: 300,
       min: 0,
     },
     totalAmount: {

@@ -30,45 +30,50 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       sortBy = 'newest',
     } = req.query as Record<string, string | undefined>;
 
-    const query: Record<string, unknown> = { ...publicQuery };
+    const filter: Record<string, any> = { ...publicQuery };
 
-    if (category && ['shoes', 'boots', 'sandals', 'slippers'].includes(category)) {
-      query['category'] = category;
+    // Category filter must be exact match, case-insensitive
+    if (category) {
+      filter.category = category.toLowerCase().trim();
     }
+
+    // Also ensure isVisible filter is applied
+    filter.isVisible = true;
+    filter.isDiscontinued = { $ne: true };
 
     if (size) {
       const sizeNum = parseInt(size, 10);
       if (!isNaN(sizeNum)) {
-        query['sizes'] = {
+        filter['sizes'] = {
           $elemMatch: { size: sizeNum, isBlocked: false },
         };
       }
     }
 
     if (color) {
-      query['colors'] = { $in: [new RegExp(color, 'i')] };
+      filter['colors'] = { $in: [new RegExp(color, 'i')] };
     }
 
     if (minPrice || maxPrice) {
       const priceQuery: Record<string, number> = {};
       if (minPrice) priceQuery['$gte'] = parseFloat(minPrice);
       if (maxPrice) priceQuery['$lte'] = parseFloat(maxPrice);
-      query['price'] = priceQuery;
+      filter['price'] = priceQuery;
     }
 
     if (search) {
-      query['$or'] = [
+      filter['$or'] = [
         { name: { $regex: search, $options: 'i' } },
         { tags: { $in: [new RegExp(search, 'i')] } },
       ];
     }
 
     if (featured === 'true') {
-      query['isFeatured'] = true;
+      filter['isFeatured'] = true;
     }
 
     if (newArrival === 'true') {
-      query['isNewArrival'] = true;
+      filter['isNewArrival'] = true;
     }
 
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
@@ -84,8 +89,8 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     const sortQuery = sortMap[sortBy] ?? sortMap['newest']!;
 
     const [products, total] = await Promise.all([
-      Product.find(query).sort(sortQuery).skip(skip).limit(limitNum).lean(),
-      Product.countDocuments(query),
+      Product.find(filter).sort(sortQuery).skip(skip).limit(limitNum).lean(),
+      Product.countDocuments(filter),
     ]);
 
     const pages = Math.ceil(total / limitNum);

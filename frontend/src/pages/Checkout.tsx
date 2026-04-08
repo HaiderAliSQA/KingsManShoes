@@ -1,14 +1,12 @@
 // frontend/src/pages/Checkout.tsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useCart } from '../hooks/useCart';
 import { usePlaceOrderMutation } from '../store/api/ordersApi';
-
-const formatPKR = (amount: number): string =>
-  `PKR ${amount.toLocaleString('en-PK')}`;
+import { formatPrice } from '../utils/formatPrice';
 
 /**
  * Validates a Pakistani mobile number.
@@ -72,10 +70,10 @@ const Checkout: React.FC = () => {
         paymentMethod,
         items: items.map((item) => ({
           productId: item.productId,
-          quantity: item.quantity,
+          quantity: Number(item.quantity),
           size: item.size,
           color: item.color,
-          price: item.price,
+          price: Number(item.price),
         })),
       };
 
@@ -93,261 +91,242 @@ const Checkout: React.FC = () => {
   if (items.length === 0) return null;
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] flex flex-col lg:flex-row pt-20">
-      
-      {/* Left Panel: Form */}
-      <div className="bg-white px-6 py-10 w-full lg:w-[55%] xl:w-3/5 lg:min-h-[calc(100vh-80px)] flex justify-end xl:pr-16 border-r border-km-border">
-        <div className="w-full max-w-lg">
-          
-          {/* Breadcrumb / Logo area could go here if isolated layout */}
-          <Link to="/products" className="inline-flex items-center gap-2 font-dm text-[11px] tracking-widest text-km-text-3 uppercase hover:text-km-gold transition-colors mb-8">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
-            Back to Shop
-          </Link>
-
-          <div className="mb-8 block lg:hidden pb-6 border-b border-km-border">
-            <h1 className="font-playfair text-2xl font-semibold mb-2 text-km-text">Order Summary</h1>
-            <p className="text-km-text-2 font-dm text-lg">{formatPKR(total)}</p>
+    <div className="min-h-screen bg-white pt-24 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Progress Header */}
+        <div className="flex flex-col items-center mb-16 animate-fadeIn">
+          <h1 className="font-playfair text-[32px] md:text-[42px] font-bold text-km-text tracking-tight mb-4 uppercase">CHECKOUT</h1>
+          <div className="flex items-center gap-4">
+            <span className="font-dm text-[11px] font-bold tracking-[0.2em] text-km-text">01 BAG</span>
+            <div className="w-8 h-px bg-km-gold"></div>
+            <span className="font-dm text-[11px] font-bold tracking-[0.2em] text-km-text">02 SHIPPING</span>
+            <div className="w-8 h-px bg-km-border"></div>
+            <span className="font-dm text-[11px] font-bold tracking-[0.2em] text-km-text-3">03 CONFIRMATION</span>
           </div>
+        </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 animate-fadeInUp">
-            
-            {/* Contact */}
-            <section>
-              <h2 className="text-lg font-playfair font-semibold text-km-text tracking-wide mb-5">Contact Information</h2>
-              <div className="space-y-4">
-                <div>
-                  <input
-                    {...register('customerEmail')}
-                    placeholder="Email Address"
-                    className="input-dark w-full"
-                  />
-                  {errors.customerEmail && <p className="text-km-error text-xs mt-1.5 font-dm">{errors.customerEmail.message}</p>}
-                </div>
-                <div>
-                  <input
-                    {...register('customerPhone')}
-                    placeholder="Mobile Number (e.g. 03001234567)"
-                    className="input-dark w-full"
-                  />
-                  {errors.customerPhone && <p className="text-km-error text-xs mt-1.5 font-dm">{errors.customerPhone.message}</p>}
-                </div>
-              </div>
-            </section>
-
-            {/* Shipping */}
-            <section>
-              <h2 className="text-lg font-playfair font-semibold text-km-text tracking-wide mb-5">Shipping Address</h2>
-              <div className="space-y-4">
-                <div>
-                  <input
-                    {...register('customerName')}
-                    placeholder="Full Name (First and Last Name)"
-                    className="input-dark w-full"
-                  />
-                  {errors.customerName && <p className="text-km-error text-xs mt-1.5 font-dm">{errors.customerName.message}</p>}
-                </div>
-                <div>
-                  <input
-                    {...register('shippingAddress.street')}
-                    placeholder="Street Address, House No, Area"
-                    className="input-dark w-full"
-                  />
-                  {errors.shippingAddress?.street && <p className="text-km-error text-xs mt-1.5 font-dm">{errors.shippingAddress.street.message}</p>}
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <input
-                      {...register('shippingAddress.city')}
-                      placeholder="City"
-                      className="input-dark w-full"
-                    />
-                    {errors.shippingAddress?.city && <p className="text-km-error text-xs mt-1.5 font-dm">{errors.shippingAddress.city.message}</p>}
-                  </div>
-                  <div>
-                    <input
-                      {...register('shippingAddress.zipCode')}
-                      placeholder="Postal Code"
-                      className="input-dark w-full"
-                    />
-                    {errors.shippingAddress?.zipCode && <p className="text-km-error text-xs mt-1.5 font-dm">{errors.shippingAddress.zipCode.message}</p>}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <input
-                      {...register('shippingAddress.state')}
-                      placeholder="Province / State"
-                      className="input-dark w-full"
-                    />
-                    {errors.shippingAddress?.state && <p className="text-km-error text-xs mt-1.5 font-dm">{errors.shippingAddress.state.message}</p>}
-                  </div>
-                  <div>
-                    <input
-                      value="Pakistan"
-                      disabled
-                      className="w-full border border-km-border px-4 py-3 text-sm text-km-text-3 font-dm bg-km-bg cursor-not-allowed outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Payment Options */}
-            <section>
-              <h2 className="text-lg font-playfair font-semibold text-km-text tracking-wide mb-5">Secure Payment</h2>
+        <div className="flex flex-col lg:flex-row gap-16 items-start">
+          
+          {/* Left Panel: Form */}
+          <div className="w-full lg:w-[60%] animate-fadeInLeft">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
               
-              <div className="space-y-3">
-                <label className={`block border px-5 py-4 cursor-pointer transition-all duration-200 hover:border-km-border-dark ${paymentMethod === 'cod' ? 'border-km-text bg-km-bg shadow-sm' : 'border-km-border'}`}>
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="radio" 
-                      name="paymentMethod" 
-                      checked={paymentMethod === 'cod'} 
-                      onChange={() => setPaymentMethod('cod')}
-                      className="w-4 h-4 accent-km-text"
+              {/* Contact Information */}
+              <section>
+                <div className="flex items-center gap-4 mb-8">
+                  <span className="w-8 h-8 rounded-full bg-km-text text-white flex items-center justify-center font-dm text-xs font-bold">1</span>
+                  <h2 className="text-[20px] font-playfair font-bold text-km-text uppercase tracking-wide">Contact Details</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-1">
+                    <label className="font-dm text-[10px] font-bold text-km-text-3 uppercase tracking-widest ml-1">Email Address</label>
+                    <input
+                      {...register('customerEmail')}
+                      placeholder="e.g. gentleman@example.com"
+                      className="w-full bg-[#FAFAF8] border border-km-border px-5 py-4 font-dm text-sm focus:outline-none focus:border-km-gold transition-all"
                     />
-                    <span className="text-[15px] font-dm text-km-text font-medium">Cash on Delivery (COD)</span>
+                    {errors.customerEmail && <p className="text-km-error text-[10px] mt-1 font-bold uppercase tracking-wider">{errors.customerEmail.message}</p>}
                   </div>
-                </label>
+                  <div className="space-y-1">
+                    <label className="font-dm text-[10px] font-bold text-km-text-3 uppercase tracking-widest ml-1">Mobile Number</label>
+                    <input
+                      {...register('customerPhone')}
+                      placeholder="e.g. 03001234567"
+                      className="w-full bg-[#FAFAF8] border border-km-border px-5 py-4 font-dm text-sm focus:outline-none focus:border-km-gold transition-all"
+                    />
+                    {errors.customerPhone && <p className="text-km-error text-[10px] mt-1 font-bold uppercase tracking-wider">{errors.customerPhone.message}</p>}
+                  </div>
+                </div>
+              </section>
 
-                <label className={`block border px-5 py-4 cursor-pointer transition-all duration-200 hover:border-km-border-dark ${paymentMethod === 'jazzcash' ? 'border-km-text bg-km-bg shadow-sm' : 'border-km-border'}`}>
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="radio" 
-                      name="paymentMethod" 
-                      checked={paymentMethod === 'jazzcash'} 
-                      onChange={() => setPaymentMethod('jazzcash')}
-                      className="w-4 h-4 accent-km-text"
+              {/* Shipping Address */}
+              <section>
+                <div className="flex items-center gap-4 mb-8">
+                  <span className="w-8 h-8 rounded-full bg-km-text text-white flex items-center justify-center font-dm text-xs font-bold">2</span>
+                  <h2 className="text-[20px] font-playfair font-bold text-km-text uppercase tracking-wide">Shipping Destination</h2>
+                </div>
+                <div className="space-y-6">
+                  <div className="space-y-1">
+                    <label className="font-dm text-[10px] font-bold text-km-text-3 uppercase tracking-widest ml-1">Recipient Name</label>
+                    <input
+                      {...register('customerName')}
+                      placeholder="First and Last Name"
+                      className="w-full bg-[#FAFAF8] border border-km-border px-5 py-4 font-dm text-sm focus:outline-none focus:border-km-gold transition-all"
                     />
-                    <span className="text-[15px] font-dm text-km-text font-medium">JazzCash Mobile Account</span>
+                    {errors.customerName && <p className="text-km-error text-[10px] mt-1 font-bold uppercase tracking-wider">{errors.customerName.message}</p>}
                   </div>
-                  {paymentMethod === 'jazzcash' && (
-                    <div className="mt-4 bg-km-surface-2 border border-km-border p-4 animate-fadeIn">
-                      <p className="text-xs font-dm text-km-text-2 leading-relaxed">By proceeding with JazzCash, please ensure that the mobile number provided above is registered with JazzCash.</p>
+                  <div className="space-y-1">
+                    <label className="font-dm text-[10px] font-bold text-km-text-3 uppercase tracking-widest ml-1">Street Address</label>
+                    <input
+                      {...register('shippingAddress.street')}
+                      placeholder="House No, Street, Apartment, Area"
+                      className="w-full bg-[#FAFAF8] border border-km-border px-5 py-4 font-dm text-sm focus:outline-none focus:border-km-gold transition-all"
+                    />
+                    {errors.shippingAddress?.street && <p className="text-km-error text-[10px] mt-1 font-bold uppercase tracking-wider">{errors.shippingAddress.street.message}</p>}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <label className="font-dm text-[10px] font-bold text-km-text-3 uppercase tracking-widest ml-1">City</label>
+                      <input
+                        {...register('shippingAddress.city')}
+                        placeholder="e.g. Lahore"
+                        className="w-full bg-[#FAFAF8] border border-km-border px-5 py-4 font-dm text-sm focus:outline-none focus:border-km-gold transition-all"
+                      />
+                      {errors.shippingAddress?.city && <p className="text-km-error text-[10px] mt-1 font-bold uppercase tracking-wider">{errors.shippingAddress.city.message}</p>}
                     </div>
-                  )}
-                </label>
+                    <div className="space-y-1">
+                      <label className="font-dm text-[10px] font-bold text-km-text-3 uppercase tracking-widest ml-1">Province</label>
+                      <input
+                        {...register('shippingAddress.state')}
+                        placeholder="e.g. Punjab"
+                        className="w-full bg-[#FAFAF8] border border-km-border px-5 py-4 font-dm text-sm focus:outline-none focus:border-km-gold transition-all"
+                      />
+                      {errors.shippingAddress?.state && <p className="text-km-error text-[10px] mt-1 font-bold uppercase tracking-wider">{errors.shippingAddress.state.message}</p>}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <label className="font-dm text-[10px] font-bold text-km-text-3 uppercase tracking-widest ml-1">Zip / Postal Code</label>
+                      <input
+                        {...register('shippingAddress.zipCode')}
+                        placeholder="e.g. 54000"
+                        className="w-full bg-[#FAFAF8] border border-km-border px-5 py-4 font-dm text-sm focus:outline-none focus:border-km-gold transition-all"
+                      />
+                      {errors.shippingAddress?.zipCode && <p className="text-km-error text-[10px] mt-1 font-bold uppercase tracking-wider">{errors.shippingAddress.zipCode.message}</p>}
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-dm text-[10px] font-bold text-km-text-3 uppercase tracking-widest ml-1">Country</label>
+                      <input
+                        value="Pakistan"
+                        disabled
+                        className="w-full bg-[#F5F3EE] border border-km-border px-5 py-4 font-dm text-sm text-km-text-3 cursor-not-allowed uppercase font-bold tracking-widest"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
 
-                <label className={`block border px-5 py-4 cursor-pointer transition-all duration-200 hover:border-km-border-dark ${paymentMethod === 'easypaisa' ? 'border-km-text bg-km-bg shadow-sm' : 'border-km-border'}`}>
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="radio" 
-                      name="paymentMethod" 
-                      checked={paymentMethod === 'easypaisa'} 
-                      onChange={() => setPaymentMethod('easypaisa')}
-                      className="w-4 h-4 accent-km-text"
-                    />
-                    <span className="text-[15px] font-dm text-km-text font-medium">Easypaisa</span>
-                  </div>
-                  {paymentMethod === 'easypaisa' && (
-                    <div className="mt-4 bg-km-surface-2 border border-km-border p-4 animate-fadeIn">
-                      <p className="text-xs font-dm text-km-text-2 leading-relaxed">After checkout, a payment authorization prompt will be sent directly to your Easypaisa app.</p>
-                    </div>
-                  )}
-                </label>
+              {/* Payment Method */}
+              <section>
+                <div className="flex items-center gap-4 mb-8">
+                  <span className="w-8 h-8 rounded-full bg-km-text text-white flex items-center justify-center font-dm text-xs font-bold">3</span>
+                  <h2 className="text-[20px] font-playfair font-bold text-km-text uppercase tracking-wide">Secure Payment</h2>
+                </div>
                 
-                <label className={`block border px-5 py-4 cursor-pointer transition-all duration-200 hover:border-km-border-dark ${paymentMethod === 'bank_transfer' ? 'border-km-text bg-km-bg shadow-sm' : 'border-km-border'}`}>
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="radio" 
-                      name="paymentMethod" 
-                      checked={paymentMethod === 'bank_transfer'} 
-                      onChange={() => setPaymentMethod('bank_transfer')}
-                      className="w-4 h-4 accent-km-text"
-                    />
-                    <span className="text-[15px] font-dm text-km-text font-medium">Direct Bank Transfer</span>
-                  </div>
-                  {paymentMethod === 'bank_transfer' && (
-                    <div className="mt-4 bg-km-surface-2 border border-km-border p-4 animate-fadeIn">
-                      <p className="text-xs font-dm text-km-text-2 leading-relaxed">Bank account instructions will be provided immediately upon order confirmation.</p>
-                    </div>
-                  )}
-                </label>
-              </div>
-            </section>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { id: 'cod', label: 'Cash on Delivery', desc: 'Secure payment at your doorstep' },
+                    { id: 'jazzcash', label: 'JazzCash', desc: 'Seamless mobile wallet payment' },
+                    { id: 'easypaisa', label: 'Easypaisa', desc: 'Instant authorization via app' },
+                    { id: 'bank_transfer', label: 'Bank Transfer', desc: 'Direct deposit instructions provided' }
+                  ].map((method) => (
+                    <label 
+                      key={method.id}
+                      className={`relative flex flex-col p-6 border transition-all duration-300 cursor-pointer group ${
+                        paymentMethod === method.id ? 'border-km-text bg-[#FAFAF8] shadow-sm' : 'border-km-border hover:border-km-border-dark'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-dm text-[13px] font-bold text-km-text uppercase tracking-widest">{method.label}</span>
+                        <input 
+                          type="radio" 
+                          name="paymentMethod" 
+                          checked={paymentMethod === method.id} 
+                          onChange={() => setPaymentMethod(method.id as any)}
+                          className="w-4 h-4 accent-km-text"
+                        />
+                      </div>
+                      <p className="font-dm text-[11px] text-km-text-3">{method.desc}</p>
+                    </label>
+                  ))}
+                </div>
+              </section>
 
-            {error && (
-              <div className="p-4 bg-km-red-bg text-km-error text-sm font-dm border border-km-error/30 animate-fadeIn flex items-center gap-2">
-                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                {(error as any)?.data?.message || 'Failed to place order. Please try again.'}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-km-text text-white py-5 text-[13px] tracking-widest uppercase font-dm font-medium transition-all duration-300 hover:bg-km-gold active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex justify-center items-center gap-3"
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Processing...
-                </>
-              ) : (
-                `Complete Order — ${formatPKR(total)}`
+              {error && (
+                <div className="p-5 bg-red-50 text-km-error text-[12px] font-bold uppercase tracking-widest border border-red-100 flex items-center gap-3 animate-fadeIn">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span>{(error as any)?.data?.message || 'CRITICAL Error: Unable to finalize order. Please verify details.'}</span>
+                </div>
               )}
-            </button>
-            <p className="text-center font-dm text-[11px] text-km-text-3 mt-4 tracking-wider uppercase">
-              By placing your order, you agree to our Terms of Service.
-            </p>
-          </form>
 
-        </div>
-      </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#1A1714] text-white py-6 text-[13px] tracking-[0.3em] font-bold uppercase transition-all duration-500 hover:bg-km-gold hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-4 btn-magnetic shadow-lg"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                    PROCESSING ORDER...
+                  </>
+                ) : (
+                  <>
+                    PLACE ORDER &mdash; {formatPrice(total)}
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
 
-      {/* Right Panel: Order Summary */}
-      <div className="bg-[#FAFAF8] px-8 py-10 flex-1 hidden lg:block xl:pl-16">
-        <div className="max-w-md animate-slideInRight sticky top-32">
-          <h2 className="text-lg font-playfair font-semibold text-km-text tracking-wide mb-8">Order Summary</h2>
-          
-          <div className="space-y-6 mb-8 max-h-[50vh] overflow-y-auto pr-2">
-            {items.map((item) => (
-              <div key={`${item.productId}-${item.size || 'nosize'}-${item.color || 'nocolor'}`} className="flex gap-4">
-                <div className="relative shrink-0">
-                  <div className="w-20 h-20 bg-white border border-km-border p-2 flex items-center justify-center">
-                     <img src={item.image} alt={item.name} className="max-w-full max-h-full object-contain mix-blend-multiply" />
+          {/* Right Panel: Order Summary */}
+          <div className="w-full lg:w-[40%] bg-[#FAFAF8] p-10 border border-km-border animate-fadeInRight">
+            <h2 className="font-playfair text-[22px] font-bold text-km-text uppercase tracking-tight mb-10 pb-4 border-b border-km-border">Order Summary</h2>
+            
+            <div className="space-y-8 mb-10 max-h-[400px] overflow-y-auto pr-4 scroll-reveal">
+              {items.map((item) => (
+                <div key={`${item.productId}-${item.size || 'nosize'}-${item.color || 'nocolor'}`} className="flex gap-6 group">
+                  <div className="relative shrink-0">
+                    <div className="w-20 h-20 bg-white border border-km-border p-2 flex items-center justify-center group-hover:border-km-gold/50 transition-colors">
+                       <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110" />
+                    </div>
+                    <span className="absolute -top-2 -right-2 bg-[#1A1714] text-white font-dm text-[9px] font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white animate-scaleIn">
+                      {item.quantity}
+                    </span>
                   </div>
-                  <span className="absolute -top-2 -right-2 bg-km-text text-white font-dm text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-[#FAFAF8]">
-                    {item.quantity}
-                  </span>
+                  <div className="flex-1 flex flex-col justify-center">
+                    <h3 className="text-[12px] text-km-text font-bold uppercase tracking-wide leading-snug group-hover:text-km-gold transition-colors">{item.name}</h3>
+                    <div className="flex items-center gap-3 mt-1 opacity-70">
+                      {item.size && <span className="font-dm text-[9px] font-bold uppercase tracking-widest underline decoration-km-gold underline-offset-4">SIZE {item.size}</span>}
+                      {item.color && <span className="font-dm text-[9px] font-bold uppercase tracking-widest">{item.color}</span>}
+                    </div>
+                    <div className="mt-2 font-dm text-[13px] font-bold text-km-text">
+                      {formatPrice(item.price * item.quantity)}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1 flex flex-col justify-center">
-                  <h3 className="text-[13px] text-km-text font-dm font-medium leading-snug">{item.name}</h3>
-                  <p className="text-[11px] font-dm text-km-text-3 mt-1 uppercase tracking-widest">
-                    {item.size && `Size ${item.size}`}
-                    {item.size && item.color && ' / '}
-                    {item.color && `${item.color}`}
-                  </p>
-                </div>
-                <div className="text-[13px] font-dm font-semibold text-km-text flex items-center">
-                  {formatPKR(item.price * item.quantity)}
-                </div>
+              ))}
+            </div>
+
+            <div className="space-y-4 pt-8 border-t border-km-border">
+              <div className="flex justify-between items-center font-dm text-[11px] font-bold text-km-text-3 tracking-[0.2em] uppercase">
+                <span>SUBTOTAL</span>
+                <span className="text-km-text text-[14px] font-bold">{formatPrice(subtotal)}</span>
               </div>
-            ))}
-          </div>
-
-          <div className="space-y-4 pb-6 border-b border-km-border-dark/20">
-            <div className="flex justify-between font-dm text-[14px] text-km-text-2">
-              <span>Subtotal</span>
-              <span className="font-medium text-km-text">{formatPKR(subtotal)}</span>
+              <div className="flex justify-between items-center font-dm text-[11px] font-bold text-km-text-3 tracking-[0.2em] uppercase">
+                <span>DELIVERY CHARGES (TCS)</span>
+                <span className={deliveryCharges === 0 ? "text-emerald-500 text-[14px]" : "text-km-text text-[14px] font-bold"}>
+                  {deliveryCharges === 0 ? 'COMPLIMENTARY' : formatPrice(deliveryCharges)}
+                </span>
+              </div>
+              
+              <div className="h-px w-full bg-km-border my-6"></div>
+              
+              <div className="flex justify-between items-baseline">
+                <span className="font-playfair text-[18px] font-bold text-km-text-3 uppercase tracking-tighter">ESTIMATED TOTAL</span>
+                <span className="font-playfair text-[32px] font-bold text-km-text-2 tracking-tight">{formatPrice(total)}</span>
+              </div>
             </div>
-            <div className="flex justify-between font-dm text-[14px] text-km-text-2">
-              <span>Delivery (TCS)</span>
-              <span className={deliveryCharges === 0 ? "text-km-gold font-medium" : "text-km-text font-medium"}>
-                {deliveryCharges === 0 ? 'FREE' : formatPKR(deliveryCharges)}
-              </span>
+
+            <div className="mt-10 p-6 bg-white border border-km-border flex items-center gap-4 animate-pulse">
+              <span className="text-2xl">🛡️</span>
+              <p className="font-dm text-[11px] text-km-text-3 font-medium leading-relaxed uppercase tracking-widest">
+                Safe & Secure Checkout • Data Encrypted
+              </p>
             </div>
           </div>
-
-          <div className="flex justify-between items-end mt-6">
-            <span className="font-dm text-[14px] text-km-text-2 uppercase tracking-widest">Total</span>
-            <span className="font-playfair text-[28px] font-semibold text-km-text tracking-wide leading-none">{formatPKR(total)}</span>
-          </div>
-
         </div>
       </div>
-
     </div>
   );
 };

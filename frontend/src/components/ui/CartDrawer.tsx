@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
+import { formatPrice } from '../../utils/formatPrice';
 
 const CartDrawer: React.FC = () => {
   const { 
@@ -29,99 +30,115 @@ const CartDrawer: React.FC = () => {
 
   if (!isOpen) return null;
 
-  const formatPrice = (price: number) => `PKR ${price.toLocaleString('en-PK')}`;
-
   return (
-    <div className="fixed inset-0 z-[100] flex justify-end">
+    <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-km-text/40 backdrop-blur-[2px] animate-fadeIn"
+        className="absolute inset-0 bg-km-text/40 backdrop-blur-[4px] animate-fadeIn"
         onClick={closeCart}
       />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-[400px] h-full bg-white shadow-cart border-l border-km-border flex flex-col animate-slideCartIn">
+      <div className="relative w-full max-w-[450px] h-full bg-white shadow-2xl flex flex-col animate-slideCartIn border-l border-km-border">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-km-border bg-km-bg">
-          <div className="flex items-baseline gap-3">
-            <h2 className="font-playfair text-[20px] font-semibold tracking-wide text-km-text">YOUR CART</h2>
-            <span className="font-dm text-[13px] text-km-text-2">({count} items)</span>
+        <div className="flex items-center justify-between p-8 border-b border-km-border bg-[#FAFAF8]">
+          <div className="flex flex-col gap-1">
+            <h2 className="font-playfair text-[24px] font-bold tracking-tight text-km-text">SHOPPING BAG</h2>
+            <p className="font-dm text-[11px] text-km-text-3 tracking-[0.2em] font-bold uppercase">
+              {count} {count === 1 ? 'MASTERPIECE' : 'MASTERPIECES'} IN STOCK
+            </p>
           </div>
           <button 
             onClick={closeCart}
-            className="text-km-text-3 hover:text-km-error transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-km-surface-2 transition-colors group"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-km-text-3 group-hover:text-km-text transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {/* Cart Items */}
-        <div className="flex-1 overflow-y-auto w-full p-6">
+        <div className="flex-1 overflow-y-auto w-full px-8 py-4">
           {items.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center gap-4">
-              <svg className="w-16 h-16 text-km-border-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              <h3 className="font-dm text-lg text-km-text-2">Your cart is empty</h3>
+            <div className="h-full flex flex-col items-center justify-center text-center gap-6">
+              <div className="w-24 h-24 bg-[#F5F3EE] rounded-full flex items-center justify-center text-4xl shadow-inner">
+                👜
+              </div>
+              <div>
+                <h3 className="font-playfair text-[20px] text-km-text font-bold mb-2">Your bag is empty</h3>
+                <p className="font-dm text-[13px] text-km-text-3 tracking-wide">
+                  Browse our collection and find your perfect pair today.
+                </p>
+              </div>
               <button 
                 onClick={() => { closeCart(); navigate('/products'); }} 
-                className="btn-outline mt-2"
+                className="btn-gold px-10 py-5 btn-magnetic"
               >
-                Continue Shopping
+                EXPLORE COLLECTION
               </button>
             </div>
           ) : (
-            <div className="flex flex-col gap-6 w-full">
+            <div className="flex flex-col w-full divide-y divide-km-border">
               {items.map((item) => (
-                <div key={`${item.productId}-${item.size}-${item.color}`} className="flex gap-4 pb-6 border-b border-km-border last:border-0 last:pb-0">
+                <div key={`${item.productId}-${item.size}-${item.color}`} className="flex gap-6 py-6 group">
                   {/* Item Image */}
-                  <div className="w-20 h-20 bg-km-bg p-2 shrink-0 border border-km-border">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                  <div className="w-24 h-24 bg-[#F5F3EE] p-3 shrink-0 border border-km-border group-hover:border-km-gold/50 transition-colors">
+                    <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110" />
                   </div>
 
                   {/* Item Details */}
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div className="flex justify-between items-start gap-2">
-                      <div>
-                        <h4 className="font-dm text-[13px] text-km-text font-medium leading-tight">{item.name}</h4>
-                        <p className="font-dm text-[11px] text-km-text-3 mt-1">
-                          {item.size ? `Size: ${item.size}` : ''} {item.color ? `| Color: ${item.color}` : ''}
-                        </p>
+                  <div className="flex-1 flex flex-col justify-between py-1">
+                    <div className="flex justify-between items-start gap-4">
+                      <div className="flex flex-col gap-1">
+                        <h4 className="font-dm text-[13px] text-km-text font-bold leading-tight uppercase tracking-wide group-hover:text-km-gold transition-colors">{item.name}</h4>
+                        <div className="flex items-center gap-3 mt-1">
+                          {item.size && (
+                            <span className="font-dm text-[10px] font-bold text-km-text-3 px-2 py-0.5 bg-[#F5F3EE] border border-km-border uppercase">SIZE {item.size}</span>
+                          )}
+                          {item.color && (
+                            <span className="font-dm text-[10px] font-bold text-km-text-3 px-2 py-0.5 bg-[#F5F3EE] border border-km-border uppercase">{item.color}</span>
+                          )}
+                        </div>
                       </div>
                       <button 
                         onClick={() => removeFromCart(item.productId, item.size, item.color)}
-                        className="text-km-text-3 hover:text-km-error text-lg leading-none"
+                        className="text-km-text-3 hover:text-km-error transition-all hover:scale-110"
+                        title="Remove"
                       >
-                        ×
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
 
-                    <div className="flex items-end justify-between mt-3">
+                    <div className="flex items-end justify-between mt-4">
                       {/* Quantity Controls */}
-                      <div className="flex items-center border border-km-border bg-white h-7">
+                      <div className="flex items-center border border-km-border bg-white h-10 rounded-sm">
                         <button 
-                          className="px-2 h-full font-dm text-km-text-2 hover:text-km-gold hover:bg-km-bg transition-colors"
+                          className="w-10 h-full flex items-center justify-center font-dm text-km-text-2 hover:bg-[#F5F3EE] transition-colors"
                           onClick={() => updateQuantity(item.productId, item.size, item.color, item.quantity - 1)}
                         >
                           -
                         </button>
-                        <span className="px-3 font-dm text-xs text-km-text text-center min-w-[30px]">
+                        <span className="px-4 font-dm text-[13px] text-km-text font-bold min-w-[36px] text-center border-x border-km-border">
                           {item.quantity}
                         </span>
                         <button 
-                          className="px-2 h-full font-dm text-km-text-2 hover:text-km-gold hover:bg-km-bg transition-colors"
+                          className="w-10 h-full flex items-center justify-center font-dm text-km-text-2 hover:bg-[#F5F3EE] transition-colors"
                           onClick={() => updateQuantity(item.productId, item.size, item.color, item.quantity + 1)}
                         >
                           +
                         </button>
                       </div>
 
-                      <span className="font-dm text-[14px] text-km-text font-semibold">
-                        {formatPrice(item.price * item.quantity)}
-                      </span>
+                      <div className="flex flex-col items-end">
+                        <span className="font-playfair text-[18px] text-km-text font-bold leading-none">
+                          {formatPrice(item.price * item.quantity)}
+                        </span>
+                        <span className="text-[9px] text-km-text-3 font-bold mt-1 uppercase tracking-widest">{formatPrice(item.price)} each</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -132,38 +149,44 @@ const CartDrawer: React.FC = () => {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="p-6 bg-km-surface-2 border-t border-km-border flex flex-col gap-3 shrink-0">
-            <div className="flex justify-between font-dm text-[13px] text-km-text-2">
-              <span>Subtotal</span>
-              <span>{formatPrice(subtotal)}</span>
+          <div className="p-8 bg-[#FAFAF8] border-t border-km-border flex flex-col gap-4 shrink-0 shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
+            <div className="space-y-3 mb-2">
+              <div className="flex justify-between font-dm text-[11px] text-km-text-3 font-bold tracking-widest uppercase">
+                <span>SUBTOTAL VALUE</span>
+                <span className="text-km-text text-[13px]">{formatPrice(subtotal)}</span>
+              </div>
+              <div className="flex justify-between font-dm text-[11px] text-km-text-3 font-bold tracking-widest uppercase">
+                <span>DELIVERY CHARGES (TCS)</span>
+                <span className={deliveryCharges === 0 ? "text-emerald-500" : "text-km-text text-[13px]"}>
+                  {deliveryCharges === 0 ? 'COMPLIMENTARY' : formatPrice(deliveryCharges)}
+                </span>
+              </div>
             </div>
-            <div className="flex justify-between font-dm text-[13px] text-km-text-2">
-              <span>Delivery (TCS)</span>
-              <span className={deliveryCharges === 0 ? "text-km-success font-medium" : ""}>
-                {deliveryCharges === 0 ? 'FREE' : formatPrice(deliveryCharges)}
-              </span>
-            </div>
-            <div className="h-px w-full bg-km-border-dark/50 my-1"></div>
-            <div className="flex justify-between items-baseline mb-3">
-              <span className="font-playfair text-[18px] font-bold text-km-text">TOTAL</span>
-              <span className="font-playfair text-[18px] font-bold text-km-text">{formatPrice(total)}</span>
+            
+            <div className="h-px w-full bg-km-border my-2"></div>
+            
+            <div className="flex justify-between items-baseline mb-6">
+              <span className="font-playfair text-[22px] font-bold text-km-text tracking-tighter uppercase">ESTIMATED TOTAL</span>
+              <span className="font-playfair text-[26px] font-bold text-km-text-2">{formatPrice(total)}</span>
             </div>
 
-            <button 
-              onClick={() => { closeCart(); navigate('/checkout'); }}
-              className="w-full bg-km-text text-white font-dm py-4 tracking-widest text-sm uppercase transition-all duration-300 hover:bg-km-gold flex justify-center items-center gap-2"
-            >
-              Proceed to Checkout
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
-            <button 
-              onClick={closeCart}
-              className="w-full font-dm text-xs text-km-text-3 uppercase tracking-wider mt-2 hover:text-km-text transition-colors"
-            >
-              Continue Shopping
-            </button>
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => { closeCart(); navigate('/checkout'); }}
+                className="w-full bg-[#1A1714] text-white font-dm py-5 tracking-[0.2em] text-[11px] font-bold uppercase transition-all duration-500 hover:bg-km-gold hover:shadow-xl flex justify-center items-center gap-3 btn-magnetic"
+              >
+                PROCEED TO CHECKOUT
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+              <button 
+                onClick={closeCart}
+                className="w-full font-dm text-[10px] text-km-text-3 uppercase tracking-[0.3em] font-bold py-3 hover:text-km-text transition-colors"
+              >
+                &larr; CONTINUE SELECTION
+              </button>
+            </div>
           </div>
         )}
 

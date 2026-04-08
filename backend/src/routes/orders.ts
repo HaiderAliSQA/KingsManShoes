@@ -152,21 +152,23 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       resolvedItems.push({
         productId: product._id,
         name: product.name,
-        price: product.price, // Always from DB
-        size: item.size,
-        color: item.color,
-        quantity: item.quantity,
-        image: product.images[0] ?? '',
+        price: Number(product.price), // FORCE Number
+        size: Number(item.size),
+        color: String(item.color),
+        quantity: Number(item.quantity), // FORCE Number
+        image: product.images?.[0] || '',
       });
     }
 
-    // Calculate totals from DB prices
-    const subtotal = resolvedItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    const deliveryCharges = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
-    const totalAmount = subtotal + deliveryCharges;
+    // Calculate totals from DB prices — parse everything explicitly
+    const subtotal = resolvedItems.reduce((sum, item) => {
+      const price = Number(item.price) || 0;
+      const quantity = Number(item.quantity) || 0;
+      return sum + (price * quantity);
+    }, 0);
+
+    const deliveryCharges = Number(subtotal) >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+    const totalAmount = Number(subtotal) + Number(deliveryCharges);
 
     // Generate unique order number
     const orderNumber = await generateOrderNumber();

@@ -4,12 +4,24 @@ import { useSearchParams } from 'react-router-dom';
 import { useGetProductsQuery } from '../store/api/productsApi';
 import ProductCard from '../components/ui/ProductCard';
 import ProductSkeleton from '../components/ui/ProductSkeleton';
-import { Category, CATEGORY_LABELS } from '../types';
 
-const CATEGORIESList: Category[] = [
-  'skechers', 'new-drops', 'formal-collection', 'lace-up', 'chunky-formals',
-  'best-selling', 'casual-collection', 'peshawari-sandals', 'sandals', 
-  'slippers', 'boots', 'loafers', 'moccasins', 'sneakers', 'monaco'
+const SIDEBAR_CATEGORIES = [
+  { value: '',                  label: 'All Products' },
+  { value: 'new-drops',         label: 'New Drops' },
+  { value: 'formal-collection', label: 'Formal Collection' },
+  { value: 'lace-up',           label: 'Lace Up' },
+  { value: 'chunky-formals',    label: 'Chunky Formals' },
+  { value: 'best-selling',      label: 'Best Selling' },
+  { value: 'casual-collection', label: 'Casual Collection' },
+  { value: 'peshawari-sandals', label: 'Peshawari Sandals' },
+  { value: 'skechers',          label: 'Skechers' },
+  { value: 'sandals',           label: 'Sandals' },
+  { value: 'slippers',          label: 'Slippers' },
+  { value: 'boots',             label: 'Boots' },
+  { value: 'loafers',           label: 'Loafers' },
+  { value: 'moccasins',         label: 'Moccasins' },
+  { value: 'sneakers',          label: 'Sneakers' },
+  { value: 'monaco',            label: 'Monaco' },
 ];
 const SIZES = [39, 40, 41, 42, 43, 44, 45, 46];
 const COLORS = ['Black', 'Brown', 'Tan', 'Navy', 'White', 'Burgundy'];
@@ -77,28 +89,17 @@ const Products: React.FC = () => {
       <div>
         <h3 className="font-dm text-[11px] tracking-widest uppercase text-km-text-3 mb-4 font-semibold">Categories</h3>
         <div className="space-y-3">
-          <label className="flex items-center gap-3 cursor-pointer group">
-            <input 
-              type="radio" 
-              name="category" 
-              value="" 
-              checked={category === ''}
-              onChange={() => updateParam('category', '')}
-              className="w-4 h-4 text-km-gold border-gray-300 focus:ring-km-gold cursor-pointer"
-            />
-            <span className="font-dm text-[13px] text-km-text-2 group-hover:text-km-text transition-colors">All Products</span>
-          </label>
-          {CATEGORIESList.map(c => (
-            <label key={c} className="flex items-center gap-3 cursor-pointer group">
+          {SIDEBAR_CATEGORIES.map(c => (
+            <label key={c.value} className="flex items-center gap-3 cursor-pointer group">
               <input 
                 type="radio" 
                 name="category" 
-                value={c} 
-                checked={category === c}
-                onChange={() => updateParam('category', c)}
+                value={c.value} 
+                checked={category === c.value}
+                onChange={() => updateParam('category', c.value)}
                 className="w-4 h-4 text-km-gold border-gray-300 focus:ring-km-gold cursor-pointer"
               />
-              <span className="font-dm text-[13px] text-km-text-2 group-hover:text-km-text transition-colors">{CATEGORY_LABELS[c]}</span>
+              <span className="font-dm text-[13px] text-km-text-2 group-hover:text-km-text transition-colors">{c.label}</span>
             </label>
           ))}
         </div>

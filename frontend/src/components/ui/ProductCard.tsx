@@ -1,28 +1,25 @@
 // frontend/src/components/ui/ProductCard.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../../types';
 import { useCart } from '../../hooks/useCart';
+import { formatPrice, discountPercent } from '../../utils/formatPrice';
 
 interface ProductCardProps {
   product: Product;
+  index?: number; // for stagger animation delay
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
   const { addToCart } = useCart();
-  const [isHovered, setIsHovered] = useState(false);
-
-  const formatPrice = (price: number) => {
-    return `PKR ${price.toLocaleString('en-PK')}`;
-  };
-
-  const discountPercent = product.compareAtPrice
-    ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
-    : 0;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Auto-select first available size if any, or undefined
+    const firstSize = product.sizes && product.sizes.find(s => !s.isBlocked)?.size;
+    
     addToCart({
       productId: product._id,
       name: product.name,
@@ -30,68 +27,82 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       quantity: 1,
       image: product.images[0] || '',
       slug: product.slug,
-      size: product.sizes.find(s => !s.isBlocked)?.size,
+      size: firstSize,
+      color: product.colors?.[0] || 'Original',
     });
   };
 
+  const discount = discountPercent(product.price, product.compareAtPrice || 0);
+
   return (
-    <Link 
-      to={`/product/${product.slug}`}
-      className="group relative flex flex-col bg-white overflow-hidden transition-all duration-400 hover:-translate-y-1 hover:shadow-product-hover pb-14"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <div 
+      className="product-card-hover scroll-reveal" 
+      style={{ transitionDelay: `${(index || 0) * 0.06}s` }}
     >
-      {/* Image Container */}
-      <div className="relative bg-km-bg w-full h-[240px] flex items-center justify-center p-6 overflow-hidden">
-        {discountPercent > 0 && (
-          <div className="absolute top-0 left-0 bg-km-error text-white font-dm text-[10px] font-bold tracking-widest px-3 py-1 z-10 shadow-sm">
-            SAVE {discountPercent}%
-          </div>
-        )}
-        <img
-          src={product.images[0] || '/placeholder.png'}
-          alt={product.name}
-          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 mix-blend-multiply"
-        />
-      </div>
+      <Link to={`/product/${product.slug}`} className="block relative group">
+        {/* IMAGE AREA */}
+        <div className="relative img-zoom bg-[#FAFAF8] aspect-square overflow-hidden border border-km-border/30">
+          <img 
+            src={product.images[0] || '/placeholder.png'} 
+            alt={product.name} 
+            className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700" 
+          />
 
-      {/* Product Info */}
-      <div className="p-3 flex flex-col gap-1">
-        <h3 className="font-dm text-[12px] text-km-text-2 tracking-wide uppercase truncate">
-          {product.name}
-        </h3>
-        
-        {/* Star Rating Row */}
-        <div className="flex items-center gap-1.5 mt-0.5">
-          <div className="flex text-km-gold text-[10px]">
-            {'★★★★★'}
+          {/* BADGES */}
+          <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+            {discount > 0 && (
+              <span className="bg-[#C41E3A] text-white text-[10px] font-bold px-2 py-1 tracking-widest font-dm shadow-sm">
+                SAVE {discount}%
+              </span>
+            )}
+            {product.isNewArrival && !discount && (
+              <span className="bg-[#1A1714] text-[#C9A84C] text-[10px] font-bold px-2 py-1 tracking-widest font-dm shadow-sm">
+                NEW
+              </span>
+            )}
           </div>
-          <span className="font-dm text-[10px] text-km-text-3">(0.0)</span>
+
+          {/* ADD TO CART BUTTON (slides up on hover) */}
+          <button 
+            className="add-to-cart-btn absolute bottom-0 left-0 right-0 bg-[#1A1714] text-white py-4 text-center text-[10px] font-bold tracking-[0.2em] font-dm cursor-pointer transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-20 hover:bg-km-gold active:bg-km-text"
+            onClick={handleQuickAdd}
+          >
+            ADD TO CART
+          </button>
         </div>
 
-        {/* Pricing */}
-        <div className="flex items-center gap-2 mt-1">
-          <span className="font-dm text-[13px] font-semibold text-km-text">
-            {formatPrice(product.price)}
-          </span>
-          {product.compareAtPrice && (
-            <span className="font-dm text-[11px] text-km-text-3 line-through">
-              {formatPrice(product.compareAtPrice)}
+        {/* INFO AREA */}
+        <div className="py-4 px-1">
+          <div className="flex flex-col gap-1">
+            <span className="font-dm text-[10px] text-km-text-3 uppercase tracking-widest font-medium">
+              {product.category.replace(/-/g, ' ')}
             </span>
-          )}
-        </div>
-      </div>
+            <h3 className="font-dm text-[13px] font-bold text-km-text uppercase tracking-wide truncate group-hover:text-km-gold transition-colors">
+              {product.name}
+            </h3>
+            
+            <div className="flex items-center gap-2 mt-1">
+              <span className="font-dm text-[14px] font-bold text-km-text">
+                {formatPrice(product.price)}
+              </span>
+              {product.compareAtPrice && product.compareAtPrice > product.price && (
+                <span className="font-dm text-[12px] text-km-text-3 line-through opacity-60">
+                  {formatPrice(product.compareAtPrice)}
+                </span>
+              )}
+            </div>
 
-      {/* Add to Cart Button (Slides up) */}
-      <div 
-        className={`absolute bottom-0 left-0 w-full bg-km-text text-white text-center py-3 font-dm text-xs tracking-widest uppercase transition-transform duration-300 ${
-          isHovered ? 'translate-y-0' : 'translate-y-full'
-        }`}
-        onClick={handleQuickAdd}
-      >
-        Add to Cart
-      </div>
-    </Link>
+            {/* Star row */}
+            <div className="flex items-center gap-2 mt-1">
+              <div className="flex text-km-gold text-[10px] tracking-tight">
+                {'★★★★★'}
+              </div>
+              <span className="font-dm text-[10px] text-km-text-3 font-medium">(0.0)</span>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </div>
   );
 };
 

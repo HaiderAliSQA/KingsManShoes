@@ -1,6 +1,6 @@
 // frontend/src/components/layout/Navbar.tsx
-import React, { useState, useCallback, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 import { Category, CATEGORY_ICONS, CATEGORY_LABELS } from '../../types';
 
@@ -15,10 +15,14 @@ const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleScroll = useCallback(() => {
-    setScrolled(window.scrollY > 10);
+    setScrolled(window.scrollY > 20);
   }, []);
 
   useEffect(() => {
@@ -26,57 +30,93 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchOpen]);
+
+  useEffect(() => {
+    setSearchOpen(false);
+    setMobileOpen(false);
+    setMegaMenuOpen(false);
+  }, [location.pathname]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
+
   return (
-    <>
-      {/* Top Announcement Bar */}
-      <div className="bg-km-text text-white text-[11px] font-dm tracking-widest text-center py-2 relative z-50">
-        FREE DELIVERY ON ORDERS ABOVE PKR 5,000 | TCS 2-DAY DELIVERY
+    <header className="fixed top-0 left-0 right-0 z-[60]">
+      {/* 1. ANNOUNCEMENT BAR */}
+      <div className="bg-[#1A1714] text-white overflow-hidden py-1.5 border-b border-white/5 relative z-[70]">
+        <div className="scroll-text text-[9px] font-dm tracking-[0.3em] font-bold uppercase py-0.5">
+          FREE DELIVERY ON ORDERS ABOVE PKR 5,000  &bull;  TCS 2-DAY DELIVERY  &bull;  
+          7-DAY EASY RETURNS  &bull;  100% GENUINE PRODUCTS  &bull;  
+          FREE DELIVERY ON ORDERS ABOVE PKR 5,000  &bull;  TCS 2-DAY DELIVERY  &bull;  
+          7-DAY EASY RETURNS  &bull;  100% GENUINE PRODUCTS  &bull;  
+        </div>
       </div>
 
-      <nav className={`sticky top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled ? 'bg-white shadow-nav border-b border-km-border' : 'bg-white border-b border-km-border'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-[70px]">
+      {/* 2. MAIN NAVIGATION */}
+      <nav className={`transition-all duration-500 relative z-[60] ${
+        scrolled ? 'navbar-scrolled h-[70px]' : 'bg-white h-[85px] border-b border-km-border'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+          <div className="flex justify-between items-center h-full">
             
             {/* Logo */}
-            <Link to="/" className="flex flex-col">
-              <span className="font-playfair text-[22px] font-bold text-km-text tracking-[4px] uppercase">
+            <Link to="/" className="flex flex-col group mr-8">
+              <span className="font-playfair text-[24px] font-bold text-km-text tracking-[4px] uppercase leading-none">
                 Kings Man
               </span>
-              <span className="font-dm text-[9px] tracking-[6px] text-km-text-3 uppercase mt-[-2px]">
+              <span className="font-dm text-[9px] tracking-[6px] text-km-text-3 uppercase mt-1 group-hover:text-km-gold transition-colors">
                 Footwear for Men
               </span>
             </Link>
 
             {/* Desktop Links */}
-            <div className="hidden md:flex items-center space-x-8 h-full">
-              <Link to="/" className="font-dm text-sm tracking-wider text-km-text-2 hover:text-km-gold transition-colors">Home</Link>
+            <div className="hidden md:flex items-center space-x-10 h-full">
+              <Link to="/" className="font-dm text-[12px] font-bold tracking-[0.15em] text-km-text hover:text-km-gold transition-colors uppercase">Home</Link>
               
-              {/* Mega Menu Trigger */}
               <div 
                 className="h-full flex items-center group cursor-pointer"
                 onMouseEnter={() => setMegaMenuOpen(true)}
                 onMouseLeave={() => setMegaMenuOpen(false)}
               >
-                <Link to="/products" className="font-dm text-sm tracking-wider text-km-text-2 group-hover:text-km-gold transition-colors relative">
-                  Shoes
-                  <span className="absolute -bottom-6 left-0 right-0 h-0.5 bg-km-gold scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-                </Link>
+                <div className="font-dm text-[12px] font-bold tracking-[0.15em] text-km-text group-hover:text-km-gold transition-colors uppercase flex items-center gap-1">
+                  Collection
+                  <svg className={`w-3 h-3 transition-transform duration-300 ${megaMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
 
-                {/* Mega Dropdown Panel */}
+                {/* Dropdown Panel */}
                 <div 
-                  className={`absolute top-full left-0 right-0 bg-white shadow-product border-t border-km-border transition-all duration-300 origin-top flex justify-center ${megaMenuOpen ? 'opacity-100 scale-y-100 pointer-events-auto' : 'opacity-0 scale-y-0 pointer-events-none'}`}
+                  className={`absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-km-border transition-all duration-500 transform origin-top ${
+                    megaMenuOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-4 pointer-events-none'
+                  }`}
                 >
-                  <div className="max-w-7xl w-full px-8 py-10">
-                    <div className="grid grid-cols-5 gap-y-8 gap-x-6">
+                  <div className="max-w-7xl mx-auto px-10 py-12">
+                    <div className="grid grid-cols-5 gap-y-10 gap-x-8">
                       {MEGA_MENU_CATEGORIES.map((cat) => (
                         <Link 
                           key={cat} 
                           to={`/products?category=${cat}`}
-                          className="flex items-center gap-3 p-2 hover:bg-km-surface-2 transition-colors rounded-sm group select-none"
-                          onClick={() => setMegaMenuOpen(false)}
+                          className="flex items-center gap-4 group/item select-none"
                         >
-                          <span className="text-xl group-hover:scale-110 transition-transform">{CATEGORY_ICONS[cat]}</span>
-                          <span className="font-dm text-[13px] text-km-text-2 group-hover:text-km-gold transition-colors">{CATEGORY_LABELS[cat]}</span>
+                          <div className="w-12 h-12 rounded-full bg-[#f8f5f0] flex items-center justify-center text-2xl group-hover/item:bg-km-gold group-hover/item:text-white transition-all duration-300 shadow-sm">
+                            {CATEGORY_ICONS[cat]}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-dm text-[11px] font-bold text-km-text group-hover/item:text-km-gold transition-colors uppercase tracking-[0.1em]">{CATEGORY_LABELS[cat]}</span>
+                            <span className="font-dm text-[9px] text-km-text-3 uppercase tracking-wider mt-0.5">Explore Style</span>
+                          </div>
                         </Link>
                       ))}
                     </div>
@@ -84,82 +124,117 @@ const Navbar: React.FC = () => {
                 </div>
               </div>
 
-              <Link to="/products?category=new-drops" className="font-dm text-sm tracking-wider text-km-text-2 hover:text-km-gold transition-colors">New Drops</Link>
-              <Link to="/products?category=boots" className="font-dm text-sm tracking-wider text-km-text-2 hover:text-km-gold transition-colors">Boots</Link>
-              <Link to="/products?category=sandals" className="font-dm text-sm tracking-wider text-km-text-2 hover:text-km-gold transition-colors">Sandals</Link>
-              <Link to="/products?category=best-selling" className="font-dm text-sm font-bold tracking-wider text-km-error hover:text-km-red-bg hover:bg-km-error px-2 py-0.5 rounded transition-colors">SALE</Link>
+              <Link to="/products?category=new-drops" className="font-dm text-[12px] font-bold tracking-[0.15em] text-km-text hover:text-km-gold transition-colors uppercase">New Arrivals</Link>
+              <Link to="/products?category=best-selling" className="font-dm text-[12px] font-bold tracking-[0.15em] text-km-gold hover:text-km-text transition-colors uppercase">Trending</Link>
             </div>
 
             {/* Right Icons */}
-            <div className="flex items-center space-x-5">
+            <div className="flex items-center space-x-6">
               <button
-                onClick={() => navigate('/products')}
-                className="text-km-text-2 hover:text-km-gold transition-colors duration-200"
+                onClick={() => setSearchOpen(true)}
+                className="text-km-text hover:text-km-gold transition-all duration-300 hover:scale-110"
                 aria-label="Search"
               >
-                <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
 
               <button
                 onClick={toggleCart}
-                className="relative text-km-text-2 hover:text-km-gold transition-colors duration-200 focus:outline-none group"
+                className="relative text-km-text hover:text-km-gold transition-all duration-300 hover:scale-110 focus:outline-none group"
                 aria-label="Toggle cart"
               >
-                <svg className="w-[22px] h-[22px] group-hover:animate-cartBounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 {count > 0 && (
-                  <span className="absolute -top-1.5 -right-2 bg-km-error text-white text-[9px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center animate-scaleIn shadow-sm">
+                  <span className="absolute -top-2 -right-2 bg-km-gold text-white text-[8px] font-bold w-[16px] h-[16px] rounded-full flex items-center justify-center shadow-lg transform transition-transform duration-300 scale-100 animate-scaleIn">
                     {count}
                   </span>
                 )}
               </button>
               
-              {/* Mobile menu button */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="md:hidden text-km-text hover:text-km-gold transition-colors focus:outline-none"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {mobileOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M6 18L18 6M6 6l12 12" />
                   ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 6h16M4 12h16M4 18h16" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M4 6h16M4 12h16M4 18h16" />
                   )}
                 </svg>
               </button>
             </div>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {mobileOpen && (
-          <div className="md:hidden bg-white border-b border-km-border animate-fadeInDown shadow-nav">
-            <div className="px-4 py-6 flex flex-col space-y-5">
-              <Link to="/" onClick={() => setMobileOpen(false)} className="font-dm text-sm tracking-wider text-km-text uppercase">Home</Link>
-              <div className="h-px bg-km-border w-full"></div>
-              
-              <p className="font-dm text-[10px] text-km-text-3 tracking-widest uppercase mb-2">Categories</p>
-              <div className="grid grid-cols-2 gap-4">
-                {MEGA_MENU_CATEGORIES.map(cat => (
-                  <Link 
-                    key={cat} 
-                    to={`/products?category=${cat}`} 
-                    onClick={() => setMobileOpen(false)} 
-                    className="flex items-center gap-2"
-                  >
-                    <span className="text-lg">{CATEGORY_ICONS[cat]}</span>
-                    <span className="font-dm text-xs text-km-text-2">{CATEGORY_LABELS[cat]}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </nav>
-    </>
+
+      {/* SEARCH OVERLAY (Slide-down from fixed header) */}
+      <div 
+        className={`absolute top-full left-0 right-0 bg-white shadow-2xl transition-all duration-500 transform origin-top border-b border-km-border ${
+          searchOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+        }`}
+      >
+        <div className="max-w-4xl mx-auto flex items-center gap-6 px-10 py-16">
+          <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center border-b-2 border-km-text focus-within:border-km-gold transition-colors py-3">
+            <svg className="w-7 h-7 text-km-text-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for footwear, style or collection..."
+              className="w-full bg-transparent border-none outline-none px-6 py-2 font-playfair text-3xl text-km-text placeholder-km-text-3 italic"
+            />
+          </form>
+          <button 
+            onClick={() => setSearchOpen(false)}
+            className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-km-surface-2 transition-colors"
+          >
+            <svg className="w-8 h-8 text-km-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* MOBILE MENU (Slide-in) */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[100] md:hidden">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="absolute top-0 right-0 w-[80%] h-full bg-white shadow-2xl animate-slideInRight flex flex-col p-10">
+             <div className="flex justify-between items-center mb-16">
+                <span className="font-playfair text-2xl font-bold tracking-widest uppercase">KINGS MAN</span>
+                <button onClick={() => setMobileOpen(false)} className="text-km-text">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+             </div>
+             <div className="flex flex-col space-y-8 overflow-y-auto">
+                <Link to="/" onClick={() => setMobileOpen(false)} className="font-playfair text-3xl font-bold text-km-text uppercase">Home</Link>
+                <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-3xl font-bold text-km-text uppercase">Collection</Link>
+                <Link to="/products?category=new-drops" onClick={() => setMobileOpen(false)} className="font-playfair text-3xl font-bold text-km-text uppercase text-km-gold">New Drops</Link>
+                <div className="h-px bg-km-border w-full my-4"></div>
+                <div className="grid grid-cols-2 gap-y-8">
+                  {MEGA_MENU_CATEGORIES.slice(0, 10).map(cat => (
+                    <Link key={cat} to={`/products?category=${cat}`} onClick={() => setMobileOpen(false)} className="flex flex-col gap-2">
+                       <span className="text-3xl">{CATEGORY_ICONS[cat]}</span>
+                       <span className="font-dm text-[10px] font-bold text-km-text uppercase tracking-widest">{CATEGORY_LABELS[cat]}</span>
+                    </Link>
+                  ))}
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Spacer to push content below the fixed header */}
+      <div className={`${scrolled ? 'h-[100px]' : 'h-[115px]'} bg-transparent w-full transition-all duration-500 absolute top-full pointer-events-none`} />
+    </header>
   );
 };
 
