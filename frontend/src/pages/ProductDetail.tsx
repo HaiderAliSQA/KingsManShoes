@@ -28,7 +28,6 @@ const ProductDetail: React.FC = () => {
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const lightboxScrollRef = useRef<HTMLDivElement>(null);
 
   const EU_TO_US: Record<number, number> = {
     39: 6, 40: 7, 41: 8, 42: 9, 43: 10, 44: 11, 45: 12
