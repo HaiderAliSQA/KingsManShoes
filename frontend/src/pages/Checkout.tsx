@@ -91,18 +91,18 @@ const Checkout: React.FC = () => {
   if (items.length === 0) return null;
 
   return (
-    <div className="min-h-screen bg-white pt-24 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white pt-20 md:pt-28 pb-20">
+      <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8">
         
         {/* Progress Header */}
-        <div className="flex flex-col items-center mb-16 animate-fadeIn">
-          <h1 className="font-playfair text-[32px] md:text-[42px] font-bold text-km-text tracking-tight mb-4 uppercase">CHECKOUT</h1>
-          <div className="flex items-center gap-4">
-            <span className="font-dm text-[11px] font-bold tracking-[0.2em] text-km-text">01 BAG</span>
-            <div className="w-8 h-px bg-km-gold"></div>
-            <span className="font-dm text-[11px] font-bold tracking-[0.2em] text-km-text">02 SHIPPING</span>
-            <div className="w-8 h-px bg-km-border"></div>
-            <span className="font-dm text-[11px] font-bold tracking-[0.2em] text-km-text-3">03 CONFIRMATION</span>
+        <div className="flex flex-col items-center mb-10 md:mb-16 animate-fadeIn">
+          <h1 className="font-playfair text-[24px] md:text-[42px] font-bold text-km-text tracking-tight mb-4 uppercase">CHECKOUT</h1>
+          <div className="flex items-center gap-2 md:gap-4">
+            <span className="font-dm text-[9px] md:text-[11px] font-bold tracking-[0.2em] text-km-text">01 BAG</span>
+            <div className="w-6 md:w-8 h-px bg-km-gold"></div>
+            <span className="font-dm text-[9px] md:text-[11px] font-bold tracking-[0.2em] text-km-text">02 SHIPPING</span>
+            <div className="w-6 md:w-8 h-px bg-km-border"></div>
+            <span className="font-dm text-[9px] md:text-[11px] font-bold tracking-[0.2em] text-km-text-3">03 CONFIRMATION</span>
           </div>
         </div>
 
@@ -270,7 +270,7 @@ const Checkout: React.FC = () => {
           </div>
 
           {/* Right Panel: Order Summary */}
-          <div className="w-full lg:w-[40%] bg-[#FAFAF8] p-10 border border-km-border animate-fadeInRight">
+          <div className="w-full lg:w-[40%] bg-[#FAFAF8] p-6 md:p-10 border border-km-border animate-fadeInRight">
             <h2 className="font-playfair text-[22px] font-bold text-km-text uppercase tracking-tight mb-10 pb-4 border-b border-km-border">Order Summary</h2>
             
             <div className="space-y-8 mb-10 max-h-[400px] overflow-y-auto pr-4 scroll-reveal">

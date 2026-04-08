@@ -1,5 +1,5 @@
 // frontend/src/pages/ProductDetail.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetProductBySlugQuery, useGetProductsQuery } from '../store/api/productsApi';
 import { useCart } from '../hooks/useCart';
@@ -25,6 +25,14 @@ const ProductDetail: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const lightboxScrollRef = useRef<HTMLDivElement>(null);
+
+  const EU_TO_US: Record<number, number> = {
+    39: 6, 40: 7, 41: 8, 42: 9, 43: 10, 44: 11, 45: 12
+  };
 
   if (isLoading) {
     return (
@@ -88,39 +96,100 @@ const ProductDetail: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 animate-fadeIn">
           
-          {/* Gallery */}
-          <div className="flex flex-col gap-4">
-            <div className="aspect-[4/5] bg-white border border-km-border overflow-hidden cursor-zoom-in relative">
-               {product.isNewArrival && (
-                 <div className="absolute top-6 left-6 inline-block px-3 py-1 bg-km-text text-white font-dm text-[10px] tracking-[4px] uppercase z-10 shadow-sm">
-                   New Arrival
-                 </div>
-               )}
-               {discount > 0 && (
-                 <div className="absolute top-6 right-6 inline-block px-3 py-1 bg-km-error text-white font-dm text-[10px] tracking-[4px] uppercase z-10 shadow-sm font-bold">
-                   SAVE {discount}%
-                 </div>
-               )}
-              <img 
-                src={product.images[mainImageIndex] || '/placeholder-shoe.jpg'}
-                alt={product.name}
-                className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 hover:scale-110 p-10"
-              />
+          {/* Gallery - Thumbnails on left for all viewports */}
+          <div className="flex flex-row gap-2 sm:gap-4 h-fit">
+            {/* Thumbnails Column (Fixed left, vertical) */}
+            <div className="flex flex-col gap-2 sm:gap-3 w-14 sm:w-20 shrink-0">
+              {product.images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setMainImageIndex(i);
+                    scrollRef.current?.scrollTo({ left: i * scrollRef.current.clientWidth, behavior: 'smooth' });
+                  }}
+                  className={`aspect-square bg-white border ${mainImageIndex === i ? 'border-km-text shadow-md' : 'border-km-border'} cursor-pointer hover:border-km-text transition-all overflow-hidden p-1 sm:p-1.5`}
+                >
+                  <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
+                </button>
+              ))}
             </div>
-            
-            {product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-4">
+
+            {/* Main Image Container (Horizontal Scroll Carousel) */}
+            <div className="flex-1 flex flex-col gap-4 relative group/gallery">
+              <div 
+                ref={scrollRef}
+                onClick={() => setIsLightboxOpen(true)}
+                className="aspect-[4/5] bg-transparent overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth cursor-zoom-in"
+                onScroll={(e) => {
+                  const scrollLeft = (e.target as HTMLDivElement).scrollLeft;
+                  const width = (e.target as HTMLDivElement).clientWidth;
+                  const newIndex = Math.round(scrollLeft / width);
+                  if (newIndex !== mainImageIndex) setMainImageIndex(newIndex);
+                }}
+              >
                 {product.images.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setMainImageIndex(i)}
-                    className={`aspect-square bg-white border ${mainImageIndex === i ? 'border-km-text' : 'border-km-border'} cursor-pointer hover:border-km-text transition-colors overflow-hidden p-2`}
-                  >
-                    <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
-                  </button>
+                  <div key={i} className="min-w-full h-full snap-center flex items-center justify-center p-0 sm:p-10 relative">
+                    {product.isNewArrival && i === 0 && (
+                      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 inline-block px-2 sm:px-3 py-1 bg-km-text text-white font-dm text-[9px] sm:text-[10px] tracking-[4px] uppercase z-10 shadow-sm">
+                        New Arrival
+                      </div>
+                    )}
+                    {discount > 0 && i === 0 && (
+                      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 inline-block px-2 sm:px-3 py-1 bg-km-error text-white font-dm text-[9px] sm:text-[10px] tracking-[4px] uppercase z-10 shadow-sm font-bold">
+                        SAVE {discount}%
+                      </div>
+                    )}
+                    <img 
+                      src={img || '/placeholder-shoe.jpg'}
+                      alt={product.name}
+                      className="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 hover:scale-105"
+                    />
+                  </div>
                 ))}
               </div>
-            )}
+
+              {/* Prev/Next Navigation Arrows (Desktop overlay only) */}
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  scrollRef.current?.scrollBy({ left: -scrollRef.current.clientWidth, behavior: 'smooth' });
+                }}
+                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 border border-km-border rounded-full items-center justify-center opacity-0 group-hover/gallery:opacity-100 transition-opacity z-10 hover:bg-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  scrollRef.current?.scrollBy({ left: scrollRef.current.clientWidth, behavior: 'smooth' });
+                }}
+                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 border border-km-border rounded-full items-center justify-center opacity-0 group-hover/gallery:opacity-100 transition-opacity z-10 hover:bg-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+              </button>
+
+              {/* Gallery Indicators (Mobile visibility only) */}
+              <div className="md:hidden flex flex-col items-center gap-3 mt-4">
+                {/* Dot Indicators */}
+                <div className="flex justify-center gap-1.5">
+                  {product.images.map((_, i) => (
+                    <button 
+                      key={i} 
+                      onClick={() => scrollRef.current?.scrollTo({ left: i * scrollRef.current.clientWidth, behavior: 'smooth' })}
+                      className={`h-1 rounded-full transition-all ${mainImageIndex === i ? 'bg-km-text w-6' : 'bg-km-border w-1.5'}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full max-w-[160px] h-1 bg-km-border/30 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-km-gold transition-all duration-300"
+                    style={{ width: `${((mainImageIndex + 1) / product.images.length) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Details */}
@@ -138,12 +207,12 @@ const ProductDetail: React.FC = () => {
             
             {/* Price line */}
             <div className="flex items-center gap-4 mb-6">
-              <span className="font-dm text-[22px] text-km-text font-medium">
-                PKR {product.price.toLocaleString('en-PK')}
+              <span className="font-dm text-[28px] text-[#C41E3A] font-bold">
+                RS.{product.price.toLocaleString('en-PK')} PKR
               </span>
               {discount > 0 && (
-                <span className="font-dm text-[16px] text-km-text-3 line-through decoration-1">
-                  PKR {product.compareAtPrice?.toLocaleString('en-PK')}
+                <span className="font-dm text-[16px] text-km-text-3 line-through opacity-60">
+                  RS.{product.compareAtPrice?.toLocaleString('en-PK')} PKR
                 </span>
               )}
             </div>
@@ -159,16 +228,13 @@ const ProductDetail: React.FC = () => {
                 {/* Sizes */}
                 {product.sizes.length > 0 && (
                   <div className="mb-8">
-                    <div className="flex justify-between items-end mb-4">
-                      <h3 className="font-dm text-[11px] tracking-widest uppercase text-km-text-3 font-semibold">
-                        Select Size (EU)
+                    <div className="flex flex-col gap-4 mb-6">
+                      <h3 className="font-dm text-[13px] text-km-text uppercase font-medium">
+                        Shoe size:
                       </h3>
-                      <button className="font-dm text-[11px] text-km-text underline underline-offset-4 hover:text-km-gold transition-colors">
-                        Size Guide
-                      </button>
                     </div>
                     
-                    <div className="flex flex-wrap gap-3">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mb-6">
                       {product.sizes.map(({ size, isBlocked }) => (
                         <button
                           key={size}
@@ -176,15 +242,24 @@ const ProductDetail: React.FC = () => {
                           onClick={() => setSelectedSize(size)}
                           className={
                             isBlocked
-                              ? "w-14 h-14 border border-km-border bg-km-surface-2 text-km-text-3/50 font-dm text-[15px] line-through cursor-not-allowed"
+                              ? "h-11 border border-km-border bg-km-surface-2 text-km-text-3/50 font-dm text-[12px] line-through cursor-not-allowed flex items-center justify-center p-1 whitespace-nowrap"
                               : size === selectedSize
-                              ? "w-14 h-14 border border-km-text bg-km-text text-white font-dm text-[15px] font-medium transition-colors"
-                              : "w-14 h-14 border border-km-border bg-white text-km-text font-dm text-[15px] hover:border-km-text transition-colors cursor-pointer"
+                              ? "h-11 border-2 border-km-text bg-white text-km-text font-dm text-[14px] font-black flex items-center justify-center px-2 whitespace-nowrap shadow-sm"
+                              : "h-11 border border-km-border bg-white text-km-text-2 font-dm text-[14px] font-black hover:border-km-text transition-all cursor-pointer flex items-center justify-center px-2 whitespace-nowrap"
                           }
                         >
-                          {size}
+                          {size} &nbsp;( {EU_TO_US[size]} )
                         </button>
                       ))}
+                    </div>
+
+                    <div className="mb-10">
+                      <button 
+                        onClick={() => setIsSizeChartOpen(true)}
+                        className="bg-black text-white px-8 py-3 rounded-[4px] font-dm text-[12px] font-bold uppercase tracking-widest hover:bg-km-text-2 transition-colors shadow-sm"
+                      >
+                        Size Chart
+                      </button>
                     </div>
                   </div>
                 )}
@@ -239,12 +314,110 @@ const ProductDetail: React.FC = () => {
                   
                   <button 
                     onClick={handleAddToCart}
-                    className="flex-1 h-14 bg-km-text text-white font-dm text-[13px] tracking-widest uppercase hover:bg-km-gold transition-colors shadow-sm"
+                    className="flex-1 h-16 bg-km-text text-white font-dm text-[14px] tracking-[0.3em] font-bold uppercase transition-all duration-500 hover:bg-km-gold hover:shadow-[0_10px_30px_rgba(201,168,76,0.25)] hover:-translate-y-1 relative overflow-hidden group shadow-lg active:scale-95"
                   >
-                    Add to Cart
+                    <span className="relative z-10">Add to Cart</span>
+                    <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
                   </button>
                 </div>
               </>
+            )}
+
+            {/* Size Chart Modal */}
+            {isSizeChartOpen && (
+              <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-km-text/60 backdrop-blur-sm animate-fadeIn" onClick={() => setIsSizeChartOpen(false)}></div>
+                <div className="relative bg-white w-full max-w-md shadow-2xl animate-scaleIn rounded-sm overflow-hidden">
+                  <div className="flex justify-between items-center p-6 border-b border-km-border">
+                    <h2 className="font-playfair text-2xl text-km-text font-semibold">Size Chart</h2>
+                    <button onClick={() => setIsSizeChartOpen(false)} className="text-km-text-3 hover:text-km-text transition-colors">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                  </div>
+                  <div className="p-8">
+                    <table className="w-full font-dm text-sm text-center border-collapse">
+                      <thead className="bg-[#FAFAF8] text-km-text-3 uppercase tracking-widest text-[11px] font-bold">
+                        <tr>
+                          <th className="py-4 border border-km-border">UK</th>
+                          <th className="py-4 border border-km-border">EU</th>
+                          <th className="py-4 border border-km-border">US</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-km-text">
+                        {[
+                          { uk: 5, eu: 39, us: 6 },
+                          { uk: 6, eu: 40, us: 7 },
+                          { uk: 7, eu: 41, us: 8 },
+                          { uk: 8, eu: 42, us: 9 },
+                          { uk: 9, eu: 43, us: 10 },
+                          { uk: 10, eu: 44, us: 11 },
+                          { uk: 11, eu: 45, us: 12 }
+                        ].map((row, idx) => (
+                          <tr key={idx} className="hover:bg-km-surface-2 transition-colors">
+                            <td className="py-4 border border-km-border font-medium">{row.uk}</td>
+                            <td className="py-4 border border-km-border font-medium">{row.eu}</td>
+                            <td className="py-4 border border-km-border font-medium">{row.us}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <p className="mt-8 text-[11px] text-km-text-3 font-dm tracking-wide leading-relaxed italic text-center uppercase">
+                      * All measurements are standard and may vary slightly by design.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Fullscreen Lightbox */}
+            {isLightboxOpen && (
+              <div className="fixed inset-0 z-[200] bg-black animate-fadeIn flex flex-col">
+                <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-[210] bg-gradient-to-b from-black/50 to-transparent">
+                  <span className="text-white font-dm text-xs tracking-widest uppercase">
+                    {mainImageIndex + 1} / {product.images.length} — {product.name}
+                  </span>
+                  <button 
+                    onClick={() => setIsLightboxOpen(false)}
+                    className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-md"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                
+                <div 
+                  className="flex-1 overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth"
+                  onScroll={(e) => {
+                    const scrollLeft = (e.target as HTMLDivElement).scrollLeft;
+                    const width = (e.target as HTMLDivElement).clientWidth;
+                    const newIndex = Math.round(scrollLeft / width);
+                    if (newIndex !== mainImageIndex) {
+                      setMainImageIndex(newIndex);
+                      // Sync back to primary gallery
+                      scrollRef.current?.scrollTo({ left: newIndex * scrollRef.current.clientWidth, behavior: 'instant' });
+                    }
+                  }}
+                  style={{ scrollSnapType: 'x mandatory' }}
+                >
+                  {product.images.map((img, i) => (
+                    <div key={i} className="min-w-full h-full flex items-center justify-center snap-center p-4">
+                      <img 
+                        src={img} 
+                        alt={`Fullscreen ${i + 1}`} 
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-3 z-[210]">
+                  {product.images.map((_, i) => (
+                    <div 
+                      key={i} 
+                      className={`h-1 rounded-full transition-all ${mainImageIndex === i ? 'bg-white w-8' : 'bg-white/30 w-4'}`}
+                    />
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Action Area for OOS/Discontinued */}

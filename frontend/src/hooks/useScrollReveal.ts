@@ -1,8 +1,8 @@
 // frontend/src/hooks/useScrollReveal.ts
-// Create this hook — used for scroll animations throughout the site
+// used for scroll animations throughout the site
 import { useEffect, useRef } from 'react';
 
-export const useScrollReveal = (threshold = 0.15) => {
+export const useScrollReveal = (threshold = 0.15, deps: any[] = []) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,7 +28,9 @@ export const useScrollReveal = (threshold = 0.15) => {
     }
 
     return () => observer.disconnect();
-  }, [threshold]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [threshold, ...deps]);
 
   return ref;
 };
+

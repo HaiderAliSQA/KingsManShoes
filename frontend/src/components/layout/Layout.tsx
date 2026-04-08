@@ -3,6 +3,7 @@ import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import CartDrawer from '../ui/CartDrawer';
+import WhatsAppWidget from '../ui/WhatsAppWidget';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
       <Footer />
       <CartDrawer />
+      <WhatsAppWidget />
     </div>
   );
 };

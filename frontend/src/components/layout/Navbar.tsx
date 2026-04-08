@@ -67,12 +67,12 @@ const Navbar: React.FC = () => {
       <nav className={`transition-all duration-500 relative z-[60] ${
         scrolled ? 'navbar-scrolled h-[70px]' : 'bg-white h-[85px] border-b border-km-border'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-          <div className="flex justify-between items-center h-full">
+        <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 h-full">
+          <div className="flex justify-between items-center h-full gap-2">
             
             {/* Logo */}
-            <Link to="/" className="flex flex-col group mr-8">
-              <span className="font-playfair text-[24px] font-bold text-km-text tracking-[4px] uppercase leading-none">
+            <Link to="/" className="flex flex-col group mr-2 md:mr-8 shrink-0">
+              <span className="font-playfair text-[18px] md:text-[24px] font-bold text-km-text tracking-[3px] md:tracking-[4px] uppercase leading-none">
                 Kings Man
               </span>
               <span className="font-dm text-[9px] tracking-[6px] text-km-text-3 uppercase mt-1 group-hover:text-km-gold transition-colors">
@@ -129,7 +129,7 @@ const Navbar: React.FC = () => {
             </div>
 
             {/* Right Icons */}
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4 md:space-x-6">
               <button
                 onClick={() => setSearchOpen(true)}
                 className="text-km-text hover:text-km-gold transition-all duration-300 hover:scale-110"
@@ -221,9 +221,9 @@ const Navbar: React.FC = () => {
                 <div className="h-px bg-km-border w-full my-4"></div>
                 <div className="grid grid-cols-2 gap-y-8">
                   {MEGA_MENU_CATEGORIES.slice(0, 10).map(cat => (
-                    <Link key={cat} to={`/products?category=${cat}`} onClick={() => setMobileOpen(false)} className="flex flex-col gap-2">
-                       <span className="text-3xl">{CATEGORY_ICONS[cat]}</span>
-                       <span className="font-dm text-[10px] font-bold text-km-text uppercase tracking-widest">{CATEGORY_LABELS[cat]}</span>
+                    <Link key={cat} to={`/products?category=${cat}`} onClick={() => setMobileOpen(false)} className="flex flex-col gap-3 py-2">
+                       <span className="text-4xl">{CATEGORY_ICONS[cat]}</span>
+                       <span className="font-dm text-[11px] font-bold text-km-text uppercase tracking-widest">{CATEGORY_LABELS[cat]}</span>
                     </Link>
                   ))}
                 </div>

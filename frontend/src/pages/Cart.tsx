@@ -36,8 +36,8 @@ const Cart: React.FC = () => {
         <svg className="w-24 h-24 text-km-border mb-8 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
-        <h1 className="font-cormorant text-white text-5xl mb-4">Your Bag is Empty</h1>
-        <p className="text-km-muted text-lg font-jost mb-10 max-w-md tracking-wide">
+        <h1 className="font-cormorant text-white text-3xl md:text-5xl mb-4">Your Bag is Empty</h1>
+        <p className="text-km-muted text-base md:text-lg font-jost mb-10 max-w-md tracking-wide">
           Explore our premium collection and find your perfect fit.
         </p>
         <Link
@@ -51,9 +51,9 @@ const Cart: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-km-black pt-28 pb-16 px-4">
+    <div className="min-h-screen bg-km-black pt-24 md:pt-32 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="font-cormorant text-white text-5xl mb-12">Shopping Bag</h1>
+        <h1 className="font-cormorant text-white text-3xl md:text-5xl mb-10 md:mb-12">Shopping Bag</h1>
 
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Left: Cart Items */}
@@ -145,7 +145,7 @@ const Cart: React.FC = () => {
 
           {/* Right: Order Summary */}
           <div className="w-full lg:w-1/3">
-            <div className="bg-km-surface border border-km-border p-8 sticky top-32 shadow-2xl">
+            <div className="bg-km-surface border border-km-border p-6 md:p-8 sticky top-32 shadow-2xl">
               <h2 className="font-cormorant text-white text-3xl mb-8">Summary</h2>
               
               <div className="space-y-4 font-jost text-sm border-b border-km-border pb-6">

@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useGetProductsQuery } from '../store/api/productsApi';
 import ProductCard from '../components/ui/ProductCard';
 import ProductSkeleton from '../components/ui/ProductSkeleton';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 const SIDEBAR_CATEGORIES = [
   { value: '',                  label: 'All Products' },
@@ -42,8 +43,7 @@ export const ProductSkeletonGrid = ({ count = 8 }: { count?: number }) => (
 const Products: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-
-  // Form states mirrored from URL params
+  
   const category = searchParams.get('category') || '';
   const size = searchParams.get('size') || '';
   const color = searchParams.get('color') || '';
@@ -64,6 +64,7 @@ const Products: React.FC = () => {
   });
 
   const products = data?.data?.products || [];
+  const revealRef = useScrollReveal(0.1, [products, isLoading]);
   const totalPages = data?.data?.pages || 1;
   const totalItems = data?.data?.total || 0;
 
@@ -183,7 +184,7 @@ const Products: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-km-bg pt-[70px]">
+    <div className="min-h-screen bg-km-bg pt-[70px]" ref={revealRef}>
       
       {/* Mobile Filters Header */}
       <div className="lg:hidden bg-white border-b border-km-border px-4 py-3 flex justify-between items-center sticky top-[70px] z-30 shadow-sm">

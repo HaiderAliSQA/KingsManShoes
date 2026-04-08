@@ -8,11 +8,11 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { Category } from '../types';
 
 const Home: React.FC = () => {
-  const revealRef = useScrollReveal();
-
   const { data: newDropsData, isLoading: loadingNew } = useGetProductsQuery({ category: 'new-drops', limit: 5 });
   const { data: bestData, isLoading: loadingBest } = useGetProductsQuery({ category: 'best-selling', limit: 5 });
   const { data: casualData, isLoading: loadingCasual } = useGetProductsQuery({ category: 'casual-collection', limit: 5 });
+
+  const revealRef = useScrollReveal(0.15, [newDropsData, bestData, casualData, loadingNew, loadingBest, loadingCasual]);
 
   const renderProductGrid = (title: string, subtitle: string, data: any, loading: boolean, category: Category) => {
     return (
@@ -24,9 +24,9 @@ const Home: React.FC = () => {
             <p className="font-dm text-km-text-3 mt-4 tracking-widest uppercase text-[11px]">{subtitle}</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {loading ? (
-              Array.from({ length: 5 }).map((_, i) => <ProductSkeleton key={i} />)
+              Array.from({ length: 4 }).map((_, i) => <ProductSkeleton key={i} />)
             ) : data?.data?.products?.length > 0 ? (
               data.data.products.map((p: any, i: number) => (
                 <ProductCard key={p._id} product={p} index={i} />
@@ -60,7 +60,7 @@ const Home: React.FC = () => {
     <div className="min-h-screen bg-km-bg" ref={revealRef}>
       
       {/* SECTION 1 — HERO */}
-      <section className="relative w-full h-[90vh] bg-[#FAFAF8] overflow-hidden flex items-center">
+      <section className="relative w-full min-h-[85vh] md:h-[90vh] bg-[#FAFAF8] overflow-hidden flex items-center py-20 md:py-0">
         {/* Grain texture overlay */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/noise-lines.png')]"></div>
         
@@ -69,7 +69,7 @@ const Home: React.FC = () => {
             <div className="inline-block px-4 py-1.5 border border-km-gold text-km-gold font-dm text-[10px] tracking-[0.5em] font-bold uppercase scroll-reveal stagger-1 mb-8">
               New Collection 2026
             </div>
-            <h1 className="text-[52px] md:text-[86px] leading-[1.1] text-km-text font-playfair mb-8">
+            <h1 className="text-[42px] md:text-[86px] leading-[1.1] text-km-text font-playfair mb-8">
               <span className="block scroll-reveal stagger-2">Step Into</span>
               <span className="block scroll-reveal stagger-3 text-gold-shimmer">Royalty</span>
             </h1>
@@ -103,7 +103,7 @@ const Home: React.FC = () => {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
+        <div className="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 flex-col items-center gap-3">
           <span className="font-dm text-[9px] tracking-[0.4em] text-km-text-3 uppercase animate-pulse">Scroll</span>
           <div className="w-px h-12 bg-gradient-to-b from-km-gold to-transparent"></div>
         </div>
@@ -136,8 +136,8 @@ const Home: React.FC = () => {
       {/* SECTION 3 — SHOP BY STYLE (Asymmetric Grid) */}
       <section className="py-24 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 scroll-reveal">
-            <h2 className="font-playfair text-[32px] md:text-[42px] text-km-text uppercase tracking-widest">Shop by Style</h2>
+          <div className="text-center mb-10 md:mb-16 scroll-reveal">
+            <h2 className="font-playfair text-[28px] md:text-[42px] text-km-text uppercase tracking-widest">Shop by Style</h2>
             <div className="underline-draw mx-auto mt-4"></div>
           </div>
 
@@ -151,7 +151,7 @@ const Home: React.FC = () => {
               <Link key={cat.id} to={`/products?category=${cat.id}`} className={`group relative h-[320px] overflow-hidden scroll-reveal scale stagger-${i+1}`}>
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110" style={{ background: cat.bg }}></div>
                 <div className="absolute inset-0 flex flex-col justify-center items-center p-8 z-10 text-center">
-                  <span className={`font-playfair text-4xl mb-4 transition-all duration-500 group-hover:translate-y-[-10px] ${cat.dark ? 'text-white' : 'text-km-text'}`}>{cat.title}</span>
+                  <span className={`font-playfair text-3xl md:text-4xl mb-4 transition-all duration-500 group-hover:translate-y-[-10px] ${cat.dark ? 'text-white' : 'text-km-text'}`}>{cat.title}</span>
                   <span className={`font-dm text-[11px] tracking-[0.3em] uppercase opacity-60 group-hover:opacity-100 transition-opacity ${cat.dark ? 'text-km-gold' : 'text-km-text-2'}`}>Explore Collection &rarr;</span>
                 </div>
                 {/* Visual Accent */}
@@ -188,7 +188,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div className="scroll-reveal-left">
             <span className="font-dm text-km-gold text-[12px] tracking-[0.5em] font-bold uppercase mb-6 block">Premium Leather</span>
-            <h2 className="font-playfair text-[52px] md:text-[72px] text-white leading-tight mb-8">
+            <h2 className="font-playfair text-[42px] md:text-[72px] text-white leading-tight mb-8">
               FORMAL <br /> COLLECTION
             </h2>
             <p className="font-dm text-km-text-3 text-[17px] leading-relaxed mb-12 max-w-lg">
@@ -201,7 +201,7 @@ const Home: React.FC = () => {
           </div>
           <div className="scroll-reveal-right flex justify-center lg:justify-end">
             <div className="relative w-full max-w-[450px] aspect-square bg-gradient-to-br from-white/5 to-white/0 flex items-center justify-center group overflow-hidden border border-white/10 p-12">
-               <span className="text-[120px] md:text-[180px] drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-110">👞</span>
+               <span className="text-[100px] md:text-[180px] drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-110">👞</span>
                <div className="absolute bottom-6 right-6 font-playfair text-white/10 text-6xl italic">Elegance</div>
             </div>
           </div>
@@ -213,14 +213,14 @@ const Home: React.FC = () => {
 
       {/* SECTION 7 — PESHAWARI SANDALS */}
       <section className="bg-[#F0EDE6] overflow-hidden flex flex-col lg:flex-row">
-        <div className="lg:w-1/2 min-h-[500px] h-auto relative overflow-hidden flex items-center justify-center p-20 scroll-reveal-left">
+        <div className="lg:w-1/2 min-h-[400px] md:min-h-[500px] h-auto relative overflow-hidden flex items-center justify-center p-20 scroll-reveal-left">
           <div className="absolute inset-4 border border-km-text/5"></div>
-          <div className="text-[180px] md:text-[240px] drop-shadow-2xl transition-transform duration-[3s] hover:rotate-12">🩴</div>
+          <div className="text-[140px] md:text-[240px] drop-shadow-2xl transition-transform duration-[3s] hover:rotate-12">🩴</div>
           <div className="absolute top-12 left-12 font-playfair text-km-text-3 italic text-2xl">Craftsmanship</div>
         </div>
         <div className="lg:w-1/2 flex flex-col justify-center px-8 md:px-24 py-24 scroll-reveal-right">
           <span className="font-dm text-km-gold text-[12px] tracking-[0.5em] font-bold uppercase mb-6 block">Traditional Craft</span>
-          <h2 className="font-playfair text-[42px] md:text-[56px] text-km-text leading-tight mb-8">
+          <h2 className="font-playfair text-[36px] md:text-[56px] text-km-text leading-tight mb-8">
             Authentic <br /> Peshawari Sandals
           </h2>
           <p className="font-dm text-km-text-2 text-[16px] leading-[1.8] mb-12 max-w-md">
@@ -243,7 +243,7 @@ const Home: React.FC = () => {
         <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/noise-lines.png')]"></div>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="scroll-reveal">
-            <h2 className="font-playfair text-[32px] md:text-[48px] text-white leading-tight mb-6 uppercase tracking-wider">
+            <h2 className="font-playfair text-[28px] md:text-[48px] text-white leading-tight mb-6 uppercase tracking-wider">
               Stay in the Circle
             </h2>
             <p className="font-dm text-km-text-3 text-[15px] mb-12 tracking-wide">
@@ -262,15 +262,9 @@ const Home: React.FC = () => {
           
           <div className="flex flex-col items-center scroll-reveal">
             <div className="h-px w-24 bg-km-gold mb-8 opacity-30"></div>
-            <a 
-              href="https://wa.me/923007702061" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-4 bg-[#25D366] text-white font-dm text-[11px] font-bold tracking-[0.2em] px-10 py-5 rounded-sm hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(37,211,102,0.3)] transition-all duration-300 uppercase"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.347-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-              Chat on WhatsApp for Order Updates
-            </a>
+            <p className="font-dm text-[11px] text-km-text-3 tracking-[0.3em] font-medium uppercase">
+              Kings Man Premium Footwear
+            </p>
           </div>
         </div>
       </section>
