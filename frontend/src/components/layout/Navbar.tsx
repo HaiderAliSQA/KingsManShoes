@@ -207,23 +207,25 @@ const Navbar: React.FC = () => {
       {mobileOpen && (
         <div className="fixed inset-0 z-[100] md:hidden">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div className="absolute top-0 right-0 w-[80%] h-full bg-white shadow-2xl animate-slideInRight flex flex-col p-10">
-             <div className="flex justify-between items-center mb-16">
+          <div className="absolute top-0 right-0 w-[80%] h-full bg-white shadow-2xl animate-slideInRight flex flex-col p-8">
+             <div className="flex justify-between items-center mb-6">
                 <span className="font-playfair text-2xl font-bold tracking-widest uppercase">KINGS MAN</span>
                 <button onClick={() => setMobileOpen(false)} className="text-km-text">
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
              </div>
-             <div className="flex flex-col space-y-8 overflow-y-auto">
-                <Link to="/" onClick={() => setMobileOpen(false)} className="font-playfair text-3xl font-bold text-km-text uppercase">Home</Link>
-                <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-3xl font-bold text-km-text uppercase">Collection</Link>
-                <Link to="/products?category=new-drops" onClick={() => setMobileOpen(false)} className="font-playfair text-3xl font-bold text-km-text uppercase text-km-gold">New Drops</Link>
-                <div className="h-px bg-km-border w-full my-4"></div>
-                <div className="grid grid-cols-2 gap-y-8">
+              <div className="flex flex-col space-y-4 overflow-y-auto">
+                 <div className="flex items-center gap-6">
+                    <Link to="/" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.2em] animate-colorCycle transition-colors">Home</Link>
+                    <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.2em] animate-colorCycle transition-colors">Collection</Link>
+                 </div>
+                 <Link to="/products?category=new-drops" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.25em] animate-colorCycle transition-colors">New Drops</Link>
+                 <div className="h-px bg-km-border w-full my-3"></div>
+                 <div className="grid grid-cols-2 gap-x-4 gap-y-5">
                   {MEGA_MENU_CATEGORIES.slice(0, 10).map(cat => (
-                    <Link key={cat} to={`/products?category=${cat}`} onClick={() => setMobileOpen(false)} className="flex flex-col gap-3 py-2">
-                       <span className="text-4xl">{CATEGORY_ICONS[cat]}</span>
-                       <span className="font-dm text-[11px] font-bold text-km-text uppercase tracking-widest">{CATEGORY_LABELS[cat]}</span>
+                    <Link key={cat} to={`/products?category=${cat}`} onClick={() => setMobileOpen(false)} className="flex flex-col items-center gap-2 py-3 px-2 bg-[#fcfaf7] border border-km-border/20 rounded-md hover:border-km-gold/40 hover:shadow-sm transition-all animate-menuFloat">
+                       <span className="text-3xl filter drop-shadow-sm">{CATEGORY_ICONS[cat]}</span>
+                       <span className="font-dm text-[9px] font-bold text-km-text uppercase tracking-widest text-center">{CATEGORY_LABELS[cat]}</span>
                     </Link>
                   ))}
                 </div>

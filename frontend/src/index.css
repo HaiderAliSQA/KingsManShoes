@@ -189,3 +189,26 @@
   100% { background-position: 200% 0; }
 }
 
+
+/* ═══════════ MOBILE MENU ANIMATIONS ═══════════ */
+
+@keyframes colorCycle {
+  0%, 100% { color: #1A1714; }
+  33%      { color: #B8860B; }
+  66%      { color: #C41E3A; }
+}
+.animate-colorCycle {
+  animation: colorCycle 5s infinite alternate ease-in-out;
+}
+
+@keyframes menuFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.animate-menuFloat {
+  animation: menuFloat 2s infinite ease-in-out;
+}
+
+.category-icon-wrapper {
+  @apply flex flex-col items-center justify-center p-3 bg-[#f8f5f0] border border-km-border/30 rounded-lg transition-all duration-300 hover:shadow-md hover:border-km-gold/50;
+}
