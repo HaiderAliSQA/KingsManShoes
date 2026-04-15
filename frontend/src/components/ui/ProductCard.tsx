@@ -36,69 +36,61 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
 
   return (
     <div 
-      className="product-card-hover scroll-reveal" 
+      className="group relative flex flex-col items-center bg-white border border-[#EBEBEB]/50 hover:border-[#EBEBEB] transition-colors" 
       style={{ transitionDelay: `${(index || 0) * 0.06}s` }}
     >
-      <Link to={`/product/${product.slug}`} className="block relative group">
+      <Link to={`/product/${product.slug}`} className="w-full relative block px-2 pt-2">
         {/* IMAGE AREA */}
-        <div className="relative img-zoom bg-[#FAFAF8] aspect-square overflow-hidden border border-km-border/30">
+        <div className="relative w-full aspect-square overflow-hidden bg-[#fafaf8]">
           <img 
             src={product.images[0] || '/placeholder.png'} 
             alt={product.name} 
-            className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700" 
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105" 
           />
-
-          {/* BADGES */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
-            {discount > 0 && (
-              <span className="bg-[#C41E3A] text-white text-[10px] font-bold px-2 py-1 tracking-widest font-dm shadow-sm">
-                SAVE {discount}%
-              </span>
-            )}
-            {product.isNewArrival && !discount && (
-              <span className="bg-[#1A1714] text-[#C9A84C] text-[10px] font-bold px-2 py-1 tracking-widest font-dm shadow-sm">
-                NEW
-              </span>
-            )}
-          </div>
 
           {/* ADD TO CART BUTTON (slides up on hover) */}
           <button 
-            className="add-to-cart-btn absolute bottom-0 left-0 right-0 bg-[#1A1714] text-white py-4 text-center text-[10px] font-bold tracking-[0.2em] font-dm cursor-pointer transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-20 hover:bg-km-gold active:bg-km-text"
+            className="absolute bottom-0 left-0 right-0 bg-[#1A1714] text-white py-3 md:py-4 text-center text-[10px] md:text-[11px] font-bold tracking-[0.2em] font-dm cursor-pointer transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-20 hover:bg-[#C9A84C] shadow-lg"
             onClick={handleQuickAdd}
           >
             ADD TO CART
           </button>
+
+          {/* BADGES */}
+          <div className="absolute top-0 left-0 flex flex-col z-10">
+            {discount > 0 && (
+              <span className="bg-[#E52B2B] text-white text-[11px] font-bold px-3 py-1 tracking-widest font-dm">
+                SAVE {discount}%
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* INFO AREA */}
-        <div className="py-4 px-1">
-          <div className="flex flex-col gap-1">
-            <span className="font-dm text-[10px] text-km-text-3 uppercase tracking-widest font-medium">
-              {product.category.replace(/-/g, ' ')}
+        {/* INFO AREA - EXACT CENTERING */}
+        <div className="py-5 flex flex-col items-center text-center w-full px-1">
+          <h3 className="font-dm text-[12px] font-bold text-[#1A1714] tracking-[0.1em] uppercase mb-2.5 line-clamp-1 w-full">
+            {product.name}
+          </h3>
+          
+          <div className="flex flex-col items-center w-full">
+            <span className="font-dm text-[13px] font-bold text-[#E52B2B] tracking-widest mb-1.5 transition-colors group-hover:text-[#C9A84C]">
+              {formatPrice(product.price)} PKR
             </span>
-            <h3 className="font-dm text-[13px] font-bold text-km-text uppercase tracking-wide truncate group-hover:text-km-gold transition-colors">
-              {product.name}
-            </h3>
-            
-            <div className="flex items-center gap-2 mt-1">
-              <span className="font-dm text-[14px] font-bold text-km-text">
-                {formatPrice(product.price)}
+            {product.compareAtPrice && product.compareAtPrice > product.price && (
+              <span className="font-dm text-[11px] text-[#A3A3A3] line-through tracking-widest opacity-80 decoration-[#A3A3A3]/50">
+                {formatPrice(product.compareAtPrice)} PKR
               </span>
-              {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="font-dm text-[12px] text-km-text-3 line-through opacity-60">
-                  {formatPrice(product.compareAtPrice)}
-                </span>
-              )}
-            </div>
+            )}
+          </div>
 
-            {/* Star row */}
-            <div className="flex items-center gap-2 mt-1">
-              <div className="flex text-km-gold text-[10px] tracking-tight">
-                {'★★★★★'}
-              </div>
-              <span className="font-dm text-[10px] text-km-text-3 font-medium">(0.0)</span>
+          {/* Star row */}
+          <div className="flex items-center gap-1.5 mt-2.5">
+            <div className="flex text-[#E5C158] text-[11px] tracking-widest">
+              {'★★★★★'}
             </div>
+            <span className="font-dm text-[10px] text-[#A3A3A3] font-medium tracking-wider">(0.0)</span>
           </div>
         </div>
       </Link>

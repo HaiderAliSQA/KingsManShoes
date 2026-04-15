@@ -10,7 +10,8 @@ export type Category =
   | 'formal-collection'
   | 'peshawari-sandals'
   | 'skechers'
-  | 'slippers';
+  | 'slippers'
+  | 'sandals';
 
 export const CATEGORY_LABELS: Record<Category, string> = {
   'best-selling':       'Best Selling',
@@ -18,14 +19,16 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   'peshawari-sandals':  'Peshawari Sandals',
   'skechers':           'Skechers',
   'slippers':           'Slippers',
+  'sandals':            'Sandals',
 };
 
 export const CATEGORY_ICONS: Record<Category, string> = {
   'best-selling':       '🔥',
   'formal-collection':  '👞',
-  'peshawari-sandals':  '🩴',
+  'peshawari-sandals':  '👞',
   'skechers':           '👟',
-  'slippers':           '🥿',
+  'slippers':           '🩴',
+  'sandals':            '🩴',
 };
 
 export interface Product {

@@ -1,56 +1,73 @@
 // frontend/src/pages/Home.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ui/ProductCard';
 import ProductSkeleton from '../components/ui/ProductSkeleton';
 import { useGetProductsQuery } from '../store/api/productsApi';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { Category } from '../types';
+import { Category, CATEGORY_LABELS } from '../types';
 
 const Home: React.FC = () => {
+  const [activeCategory, setActiveCategory] = useState<Category | 'all'>('all');
+  
+  const { data: activeData, isLoading: loadingActive } = useGetProductsQuery({ 
+    category: activeCategory !== 'all' ? activeCategory as Category : undefined, 
+    limit: 12 
+  });
+  
   const { data: formalData, isLoading: loadingFormal } = useGetProductsQuery({ category: 'formal-collection', limit: 5 });
-  const { data: bestData, isLoading: loadingBest } = useGetProductsQuery({ category: 'best-selling', limit: 5 });
   const { data: sandalsData, isLoading: loadingSandals } = useGetProductsQuery({ category: 'peshawari-sandals', limit: 5 });
 
-  const revealRef = useScrollReveal(0.15, [formalData, bestData, sandalsData, loadingFormal, loadingBest, loadingSandals]);
+  const revealRef = useScrollReveal(0.15, [formalData, activeData, sandalsData, loadingFormal, loadingActive, loadingSandals]);
 
-  const renderProductGrid = (title: string, subtitle: string, data: any, loading: boolean, category: Category) => {
+  const renderProductGrid = (title: string, subtitle: string, data: any, loading: boolean, activeCatStr: string, showCategoryBar = false) => {
     return (
-      <section className="py-24 bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 scroll-reveal">
-            <h2 className="font-playfair text-[32px] md:text-[42px] text-km-text uppercase tracking-[0.1em]">{title}</h2>
-            <div className="underline-draw mx-auto mt-4"></div>
-            <p className="font-dm text-km-text-3 mt-4 tracking-widest uppercase text-[11px]">{subtitle}</p>
-          </div>
+      <section className="py-8 lg:py-16 bg-white overflow-hidden border-t border-[#EBEBEB]/50 first-of-type:border-t-0">
+        <div className="max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6">
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+          {showCategoryBar ? (
+            <div className="mb-8 md:mb-12 w-full flex overflow-x-auto gap-6 md:gap-10 px-4 pb-4 snap-x snap-mandatory hide-scrollbar justify-start md:justify-center border-b border-[#EBEBEB]">
+              <button 
+                onClick={() => setActiveCategory('all')}
+                className={`snap-center shrink-0 font-dm text-[12px] md:text-[14px] uppercase tracking-[0.1em] transition-all duration-300 pb-2 relative group ${activeCategory === 'all' ? 'text-[#C9A84C] font-medium scale-105 filter drop-shadow-sm' : 'text-[#A3A3A3] hover:text-[#C9A84C] font-normal hover:scale-105'}`}
+              >
+                ALL PRODUCTS
+                {activeCategory === 'all' && <div className="absolute bottom-[-1px] left-0 w-full h-[2px] bg-[#C9A84C] animate-pulse"></div>}
+              </button>
+              {(Object.entries(CATEGORY_LABELS) as [Category, string][]).map(([key, label]) => (
+                <button 
+                  key={key} 
+                  onClick={() => setActiveCategory(key as Category)}
+                  className={`snap-center shrink-0 font-dm text-[12px] md:text-[14px] uppercase tracking-[0.1em] transition-all duration-300 pb-2 relative group ${activeCategory === key ? 'text-[#C9A84C] font-medium scale-105 filter drop-shadow-sm' : 'text-[#A3A3A3] hover:text-[#C9A84C] font-normal hover:scale-105'}`}
+                >
+                  {label}
+                  {activeCategory === key && <div className="absolute bottom-[-1px] left-0 w-full h-[2px] bg-[#C9A84C] animate-pulse"></div>}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center mb-10 md:mb-12 scroll-reveal">
+              <h2 className="font-playfair text-[28px] md:text-[36px] text-[#1A1714] tracking-wider uppercase">{title}</h2>
+              <div className="underline-draw mx-auto mt-4 px-12"></div>
+              <p className="font-dm text-[#A3A3A3] mt-4 tracking-widest uppercase text-[11px] font-bold">{subtitle}</p>
+            </div>
+          )}
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 lg:gap-6">
             {loading ? (
-              Array.from({ length: 4 }).map((_, i) => <ProductSkeleton key={i} />)
+              Array.from({ length: 5 }).map((_, i) => <ProductSkeleton key={i} />)
             ) : data?.data?.products?.length > 0 ? (
               data.data.products.map((p: any, i: number) => (
                 <ProductCard key={p._id} product={p} index={i} />
               ))
             ) : (
-              <div className="col-span-full py-20 px-8 border-2 border-dashed border-km-border/30 rounded-lg text-center flex flex-col items-center justify-center">
-                <span className="text-4xl mb-4 opacity-20">📦</span>
-                <p className="font-dm text-km-text-3 tracking-widest uppercase text-xs">
-                  {title} coming soon &mdash; Add products from Admin Panel
-                </p>
+              <div className="col-span-full py-16 text-center">
+                <span className="font-dm text-[#A3A3A3] tracking-widest uppercase text-xs">
+                  {subtitle} coming soon
+                </span>
               </div>
             )}
           </div>
-          
-          {data?.data?.products?.length > 0 && (
-            <div className="mt-16 text-center scroll-reveal">
-              <Link to={`/products?category=${category}`} className="btn-outline group inline-flex items-center gap-2">
-                VIEW ALL COLLECTION
-                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                </svg>
-              </Link>
-            </div>
-          )}
         </div>
       </section>
     );
@@ -60,7 +77,7 @@ const Home: React.FC = () => {
     <div className="min-h-screen bg-km-bg" ref={revealRef}>
       
       {/* SECTION 1 — HERO */}
-      <section className="relative w-full min-h-[85vh] md:h-[90vh] bg-[#FAFAF8] overflow-hidden flex items-center py-20 md:py-0">
+      <section className="relative w-full min-h-[50vh] md:min-h-[85vh] lg:min-h-[90vh] bg-[#FAFAF8] overflow-hidden flex items-center py-12 md:py-0">
         {/* Grain texture overlay */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/noise-lines.png')]"></div>
         
@@ -110,22 +127,22 @@ const Home: React.FC = () => {
       </section>
 
       {/* SECTION 2 — TRUST BADGES */}
-      <section className="bg-[#F5F3EE] border-y border-km-border py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <section className="bg-[#FAF9F6] border-y border-[#EBEBEB] py-6 md:py-8">
+        <div className="max-w-[1600px] mx-auto px-4 lg:px-6">
+          <div className="flex overflow-x-auto gap-8 pb-4 md:pb-0 snap-x snap-mandatory hide-scrollbar justify-start md:justify-center">
             {[
               { icon: '🚚', title: 'TCS Delivery', desc: 'Secure 2-Day Shipping' },
               { icon: '🔄', title: '7-Day Return', desc: 'Easy Size Exchanges' },
               { icon: '✨', title: '100% Genuine', desc: 'Premium Royal Quality' },
               { icon: '📦', title: 'Free Delivery', desc: 'Orders over PKR 5,000' }
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-4 scroll-reveal stagger-1">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-xl shadow-sm">
+              <div key={i} className="flex items-center gap-4 min-w-[220px] md:min-w-fit shrink-0 snap-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center text-lg md:text-xl shadow-sm border border-[#EBEBEB]/50 shrink-0">
                   {item.icon}
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-playfair text-[15px] font-bold text-km-text">{item.title}</span>
-                  <span className="font-dm text-[11px] text-km-text-3 tracking-wider uppercase font-medium">{item.desc}</span>
+                  <span className="font-playfair text-[14px] md:text-[15px] font-bold text-[#1A1714] whitespace-nowrap">{item.title}</span>
+                  <span className="font-dm text-[10px] md:text-[11px] text-[#A3A3A3] tracking-wider uppercase font-medium whitespace-nowrap">{item.desc}</span>
                 </div>
               </div>
             ))}
@@ -133,54 +150,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* SECTION 3 — SHOP BY STYLE (Asymmetric Grid) */}
-      <section className="py-24 bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 md:mb-16 scroll-reveal">
-            <h2 className="font-playfair text-[28px] md:text-[42px] text-km-text uppercase tracking-widest">Shop by Style</h2>
-            <div className="underline-draw mx-auto mt-4"></div>
-          </div>
-
-          {/* Row 1 — 3 LARGE Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            {[
-              { id: 'formal-collection', title: 'Formal Collection', bg: '#F5F3EE', dark: false },
-              { id: 'best-selling', title: 'Best Selling', bg: '#1A1714', dark: true },
-              { id: 'peshawari-sandals', title: 'Traditionals', bg: '#F5F3EE', dark: false }
-            ].map((cat, i) => (
-              <Link key={cat.id} to={`/products?category=${cat.id}`} className={`group relative h-[320px] overflow-hidden scroll-reveal scale stagger-${i+1}`}>
-                <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110" style={{ background: cat.bg }}></div>
-                <div className="absolute inset-0 flex flex-col justify-center items-center p-8 z-10 text-center">
-                  <span className={`font-playfair text-3xl md:text-4xl mb-4 transition-all duration-500 group-hover:translate-y-[-10px] ${cat.dark ? 'text-white' : 'text-km-text'}`}>{cat.title}</span>
-                  <span className={`font-dm text-[11px] tracking-[0.3em] uppercase opacity-60 group-hover:opacity-100 transition-opacity ${cat.dark ? 'text-km-gold' : 'text-km-text-2'}`}>Explore Collection &rarr;</span>
-                </div>
-                {/* Visual Accent */}
-                <div className="absolute top-6 left-6 w-12 h-12 border-t border-l border-white/20"></div>
-                <div className="absolute bottom-6 right-6 w-12 h-12 border-b border-r border-white/20"></div>
-              </Link>
-            ))}
-          </div>
-
-          {/* Row 2 — 5 SMALLER Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {[
-              { id: 'formal-collection', title: 'Formals' },
-              { id: 'best-selling', title: 'Trending' },
-              { id: 'peshawari-sandals', title: 'Peshawari' },
-              { id: 'new-drops', title: 'New Drops' },
-              { id: 'sale', title: 'Sale' }
-            ].map((cat, i) => (
-              <Link key={cat.id} to={`/products?category=${cat.id}`} className={`group relative h-[180px] bg-[#FAFAF8] flex flex-col items-center justify-center p-4 border border-km-border/30 transition-all duration-500 hover:bg-[#1A1714] scroll-reveal scale stagger-${i+1}`}>
-                <span className="font-dm text-[11px] font-bold tracking-[0.2em] text-km-text uppercase group-hover:text-km-gold transition-colors text-center">{cat.title}</span>
-                <span className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-white font-dm tracking-[0.1em] uppercase">Shop Now</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 4 — BEST SELLING */}
-      {renderProductGrid('Best Selling', 'Our most iconic and loved silhouettes', bestData, loadingBest, 'best-selling')}
+      {/* SECTION 4 — DYNAMIC FILTER GRID (Category Bar Embedded) */}
+      {renderProductGrid('Discover', 'Our most iconic and loved silhouettes', activeData, loadingActive, activeCategory, true)}
 
       {/* SECTION 5 — FORMAL COLLECTION BANNER */}
       <section className="relative w-full bg-[#1A1714] overflow-hidden">

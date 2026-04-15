@@ -5,7 +5,7 @@ import { useCart } from '../../hooks/useCart';
 import { Category, CATEGORY_ICONS, CATEGORY_LABELS } from '../../types';
 
 const MEGA_MENU_CATEGORIES: Category[] = [
-  'best-selling', 'formal-collection', 'peshawari-sandals', 'skechers', 'slippers'
+  'best-selling', 'formal-collection', 'peshawari-sandals', 'skechers', 'slippers', 'sandals'
 ];
 
 const Navbar: React.FC = () => {
@@ -50,28 +50,31 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[60]">
-      {/* 1. ANNOUNCEMENT BAR */}
-      <div className="bg-[#1A1714] text-white overflow-hidden py-1.5 border-b border-white/5 relative z-[70]">
-        <div className="scroll-text text-[9px] font-dm tracking-[0.3em] font-bold uppercase py-0.5">
-          FREE DELIVERY ON ORDERS ABOVE PKR 5,000  &bull;  TCS 2-DAY DELIVERY  &bull;  
-          7-DAY EASY RETURNS  &bull;  100% GENUINE PRODUCTS  &bull;  
-          FREE DELIVERY ON ORDERS ABOVE PKR 5,000  &bull;  TCS 2-DAY DELIVERY  &bull;  
-          7-DAY EASY RETURNS  &bull;  100% GENUINE PRODUCTS  &bull;  
+    <header className="fixed top-0 left-0 right-0 z-[100]">
+      {/* 1. ANNOUNCEMENT BAR - SOLIDLY FIXED AT VERY TOP */}
+      <div className="bg-premium-dark overflow-hidden py-2 sm:py-2.5 border-b border-km-gold/30 flex relative z-[110] shadow-md w-full">
+        <div className="marquee-content inline-flex shrink-0">
+          <div className="premium-announcement-text text-[11px] sm:text-[13px] font-dm tracking-[0.3em] font-black uppercase py-0.5 whitespace-nowrap">
+            FREE DELIVERY ON ORDERS ABOVE PKR 5,000 &nbsp;&bull;&nbsp; TCS 2-DAY DELIVERY &nbsp;&bull;&nbsp; 7-DAY EASY RETURNS &nbsp;&bull;&nbsp; 100% GENUINE PRODUCTS &nbsp;&bull;&nbsp;
+            FREE DELIVERY ON ORDERS ABOVE PKR 5,000 &nbsp;&bull;&nbsp; TCS 2-DAY DELIVERY &nbsp;&bull;&nbsp; 7-DAY EASY RETURNS &nbsp;&bull;&nbsp; 100% GENUINE PRODUCTS &nbsp;&bull;&nbsp;
+          </div>
+          <div className="premium-announcement-text text-[11px] sm:text-[13px] font-dm tracking-[0.3em] font-black uppercase py-0.5 whitespace-nowrap">
+            FREE DELIVERY ON ORDERS ABOVE PKR 5,000 &nbsp;&bull;&nbsp; TCS 2-DAY DELIVERY &nbsp;&bull;&nbsp; 7-DAY EASY RETURNS &nbsp;&bull;&nbsp; 100% GENUINE PRODUCTS &nbsp;&bull;&nbsp;
+            FREE DELIVERY ON ORDERS ABOVE PKR 5,000 &nbsp;&bull;&nbsp; TCS 2-DAY DELIVERY &nbsp;&bull;&nbsp; 7-DAY EASY RETURNS &nbsp;&bull;&nbsp; 100% GENUINE PRODUCTS &nbsp;&bull;&nbsp;
+          </div>
         </div>
       </div>
 
       {/* 2. MAIN NAVIGATION */}
-      <nav className={`transition-all duration-500 relative z-[60] ${
-        scrolled ? 'navbar-scrolled h-[70px]' : 'bg-white h-[85px] border-b border-km-border'
-      }`}>
+      <nav className={`transition-all duration-500 relative z-[60] ${scrolled ? 'navbar-scrolled h-[70px]' : 'bg-white h-[85px] border-b border-km-border'
+        }`}>
         <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 h-full">
           <div className="flex justify-between items-center h-full gap-2">
-            
+
             {/* Logo */}
             <Link to="/" className="flex flex-col group mr-2 md:mr-8 shrink-0">
               <span className="font-playfair text-[18px] md:text-[24px] font-bold text-km-text tracking-[3px] md:tracking-[4px] uppercase leading-none">
-                Kings Man
+                Kings Men
               </span>
               <span className="font-dm text-[9px] tracking-[6px] text-km-text-3 uppercase mt-1 group-hover:text-km-gold transition-colors">
                 Footwear for Men
@@ -81,8 +84,8 @@ const Navbar: React.FC = () => {
             {/* Desktop Links */}
             <div className="hidden md:flex items-center space-x-10 h-full">
               <Link to="/" className="font-dm text-[12px] font-bold tracking-[0.15em] text-km-text hover:text-km-gold transition-colors uppercase">Home</Link>
-              
-              <div 
+
+              <div
                 className="h-full flex items-center group cursor-pointer"
                 onMouseEnter={() => setMegaMenuOpen(true)}
                 onMouseLeave={() => setMegaMenuOpen(false)}
@@ -95,16 +98,15 @@ const Navbar: React.FC = () => {
                 </div>
 
                 {/* Dropdown Panel */}
-                <div 
-                  className={`absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-km-border transition-all duration-500 transform origin-top ${
-                    megaMenuOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-4 pointer-events-none'
-                  }`}
+                <div
+                  className={`absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-km-border transition-all duration-500 transform origin-top ${megaMenuOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-4 pointer-events-none'
+                    }`}
                 >
                   <div className="max-w-7xl mx-auto px-10 py-12">
                     <div className="grid grid-cols-5 gap-y-10 gap-x-8">
                       {MEGA_MENU_CATEGORIES.map((cat) => (
-                        <Link 
-                          key={cat} 
+                        <Link
+                          key={cat}
                           to={`/products?category=${cat}`}
                           className="flex items-center gap-4 group/item select-none"
                         >
@@ -152,7 +154,7 @@ const Navbar: React.FC = () => {
                   </span>
                 )}
               </button>
-              
+
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="md:hidden text-km-text hover:text-km-gold transition-colors focus:outline-none"
@@ -171,10 +173,9 @@ const Navbar: React.FC = () => {
       </nav>
 
       {/* SEARCH OVERLAY (Slide-down from fixed header) */}
-      <div 
-        className={`absolute top-full left-0 right-0 bg-white shadow-2xl transition-all duration-500 transform origin-top border-b border-km-border ${
-          searchOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
-        }`}
+      <div
+        className={`absolute top-full left-0 right-0 bg-white shadow-2xl transition-all duration-500 transform origin-top border-b border-km-border ${searchOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+          }`}
       >
         <div className="max-w-4xl mx-auto flex items-center gap-6 px-10 py-16">
           <form onSubmit={handleSearchSubmit} className="flex-1 flex items-center border-b-2 border-km-text focus-within:border-km-gold transition-colors py-3">
@@ -190,7 +191,7 @@ const Navbar: React.FC = () => {
               className="w-full bg-transparent border-none outline-none px-6 py-2 font-playfair text-3xl text-km-text placeholder-km-text-3 italic"
             />
           </form>
-          <button 
+          <button
             onClick={() => setSearchOpen(false)}
             className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-km-surface-2 transition-colors"
           >
@@ -206,28 +207,28 @@ const Navbar: React.FC = () => {
         <div className="fixed inset-0 z-[100] md:hidden">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
           <div className="absolute top-0 right-0 w-[80%] h-full bg-white shadow-2xl animate-slideInRight flex flex-col p-8">
-             <div className="flex justify-between items-center mb-6">
-                <span className="font-playfair text-2xl font-bold tracking-widest uppercase">KINGS MAN</span>
-                <button onClick={() => setMobileOpen(false)} className="text-km-text">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-             </div>
-              <div className="flex flex-col space-y-4 overflow-y-auto">
-                 <div className="flex items-center gap-6">
-                    <Link to="/" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.2em] animate-colorCycle transition-colors">Home</Link>
-                    <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.2em] animate-colorCycle transition-colors">Collection</Link>
-                 </div>
-                 <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.25em] animate-colorCycle transition-colors">New Drops</Link>
-                 <div className="h-px bg-km-border w-full my-3"></div>
-                 <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-                  {MEGA_MENU_CATEGORIES.slice(0, 10).map(cat => (
-                    <Link key={cat} to={`/products?category=${cat}`} onClick={() => setMobileOpen(false)} className="flex flex-col items-center gap-2 py-3 px-2 bg-[#fcfaf7] border border-km-border/20 rounded-md hover:border-km-gold/40 hover:shadow-sm transition-all animate-menuFloat">
-                       <span className="text-3xl filter drop-shadow-sm">{CATEGORY_ICONS[cat]}</span>
-                       <span className="font-dm text-[9px] font-bold text-km-text uppercase tracking-widest text-center">{CATEGORY_LABELS[cat]}</span>
-                    </Link>
-                  ))}
-                </div>
-             </div>
+            <div className="flex justify-between items-center mb-6">
+              <span className="font-playfair text-2xl font-bold tracking-widest uppercase">KINGS MAN</span>
+              <button onClick={() => setMobileOpen(false)} className="text-km-text">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="flex flex-col space-y-4 overflow-y-auto">
+              <div className="flex items-center gap-6">
+                <Link to="/" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.2em] animate-colorCycle transition-colors">Home</Link>
+                <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.2em] animate-colorCycle transition-colors">Collection</Link>
+              </div>
+              <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.25em] animate-colorCycle transition-colors">New Drops</Link>
+              <div className="h-px bg-km-border w-full my-3"></div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+                {MEGA_MENU_CATEGORIES.slice(0, 10).map(cat => (
+                  <Link key={cat} to={`/products?category=${cat}`} onClick={() => setMobileOpen(false)} className="flex flex-col items-center gap-2 py-3 px-2 bg-[#fcfaf7] border border-km-border/20 rounded-md hover:border-km-gold/40 hover:shadow-sm transition-all animate-menuFloat">
+                    <span className="text-3xl filter drop-shadow-sm">{CATEGORY_ICONS[cat]}</span>
+                    <span className="font-dm text-[9px] font-bold text-km-text uppercase tracking-widest text-center">{CATEGORY_LABELS[cat]}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -44,15 +44,15 @@ const uploadToCloudinary = (
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: 'kingsman/products',
-        transformation: [
-          {
-            width: 900,
-            height: 900,
-            crop: 'limit',
-            quality: 'auto:best',
-          },
-        ],
         resource_type: 'image',
+        transformation: [
+          { width: 900, height: 900, crop: 'limit', quality: 'auto:best', fetch_format: 'auto' }
+        ],
+        eager: [
+          { width: 400, height: 400, crop: 'limit', quality: 'auto', fetch_format: 'auto' },
+          { width: 120, height: 120, crop: 'limit', quality: 'auto', fetch_format: 'auto' },
+        ],
+        eager_async: true,
       },
       (error, result) => {
         if (error || !result) {

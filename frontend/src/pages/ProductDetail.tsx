@@ -5,6 +5,7 @@ import { useGetProductBySlugQuery, useGetProductsQuery } from '../store/api/prod
 import { useCart } from '../hooks/useCart';
 import ProductCard from '../components/ui/ProductCard';
 import toast from 'react-hot-toast';
+import { cloudinaryUrl } from '../utils/cloudinaryUrl';
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -93,7 +94,7 @@ const ProductDetail: React.FC = () => {
           <span className="text-km-text-2">{product.name}</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 animate-fadeIn">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-20 animate-fadeIn">
           
           {/* Gallery - Thumbnails on left for all viewports */}
           <div className="flex flex-row gap-2 sm:gap-4 h-fit">
@@ -108,7 +109,7 @@ const ProductDetail: React.FC = () => {
                   }}
                   className={`aspect-square bg-white border ${mainImageIndex === i ? 'border-km-text shadow-md' : 'border-km-border'} cursor-pointer hover:border-km-text transition-all overflow-hidden p-1 sm:p-1.5`}
                 >
-                  <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
+                  <img src={cloudinaryUrl(img, { width: 120 })} alt={`Thumbnail ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-contain mix-blend-multiply" />
                 </button>
               ))}
             </div>
@@ -139,8 +140,10 @@ const ProductDetail: React.FC = () => {
                       </div>
                     )}
                     <img 
-                      src={img || '/placeholder-shoe.jpg'}
+                      src={cloudinaryUrl(img || '/placeholder-shoe.jpg', { width: 900 })}
                       alt={product.name}
+                      loading={i === 0 ? "eager" : "lazy"}
+                      decoding="async"
                       className="w-full h-full object-contain mix-blend-multiply transition-transform duration-700 hover:scale-105"
                     />
                   </div>
@@ -192,15 +195,15 @@ const ProductDetail: React.FC = () => {
           </div>
 
           {/* Details */}
-          <div className="flex flex-col py-6">
+          <div className="flex flex-col py-2 md:py-6">
             {product.isDiscontinued && (
-              <div className="bg-red-50 border border-red-200 text-red-700 font-dm text-sm px-4 py-3 tracking-wider text-center mb-6 rounded-sm flex items-center justify-center gap-2">
+              <div className="bg-red-50 border border-red-200 text-red-700 font-dm text-sm px-4 py-3 tracking-wider text-center mb-4 md:mb-6 rounded-sm flex items-center justify-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                 This item has been discontinued and is no longer available.
               </div>
             )}
             
-            <h1 className="font-playfair text-[40px] text-km-text font-semibold leading-[1.1] mb-6">
+            <h1 className="font-playfair text-[32px] md:text-[40px] text-km-text font-semibold leading-[1.1] mb-2 md:mb-4 break-words">
               {product.name}
             </h1>
             
@@ -216,24 +219,19 @@ const ProductDetail: React.FC = () => {
               )}
             </div>
 
-            {/* Description */}
-            <div className="font-dm text-km-text-2 text-[15px] leading-relaxed mb-10 pb-10 border-b border-km-border whitespace-pre-line">
-              {product.description}
-            </div>
-
-            {/* Selection Area */}
+            {/* Description moved below buttons */}            {/* Selection Area */}
             {!product.isDiscontinued && product.stock > 0 && (
               <>
                 {/* Sizes */}
                 {product.sizes.length > 0 && (
-                  <div className="mb-8">
-                    <div className="flex flex-col gap-4 mb-6">
-                      <h3 className="font-dm text-[13px] text-km-text uppercase font-medium">
+                  <div className="mb-4 md:mb-6">
+                    <div className="flex flex-col gap-2 mb-3 md:mb-4">
+                      <h3 className="font-dm text-[12px] md:text-[13px] text-km-text uppercase font-medium tracking-wide">
                         Shoe size:
                       </h3>
                     </div>
                     
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mb-6">
+                    <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mb-4 md:mb-6">
                       {product.sizes.map(({ size, isBlocked }) => (
                         <button
                           key={size}
@@ -241,43 +239,61 @@ const ProductDetail: React.FC = () => {
                           onClick={() => setSelectedSize(size)}
                           className={
                             isBlocked
-                              ? "h-11 border border-km-border bg-km-surface-2 text-km-text-3/50 font-dm text-[12px] line-through cursor-not-allowed flex items-center justify-center p-1 whitespace-nowrap"
+                              ? "h-9 border border-km-border bg-km-surface-2 text-km-text-3/50 font-dm text-[11px] line-through cursor-not-allowed flex items-center justify-center p-1 whitespace-nowrap"
                               : size === selectedSize
-                              ? "h-11 border-2 border-km-text bg-white text-km-text font-dm text-[14px] font-black flex items-center justify-center px-2 whitespace-nowrap shadow-sm"
-                              : "h-11 border border-km-border bg-white text-km-text-2 font-dm text-[14px] font-black hover:border-km-text transition-all cursor-pointer flex items-center justify-center px-2 whitespace-nowrap"
+                              ? "h-9 border-2 border-km-text bg-white text-km-text font-dm text-[12px] font-black flex items-center justify-center px-1 whitespace-nowrap shadow-sm"
+                              : "h-9 border border-km-border bg-white text-km-text-2 font-dm text-[12px] font-bold hover:border-km-text transition-all cursor-pointer flex items-center justify-center px-1 whitespace-nowrap"
                           }
                         >
-                          {size} &nbsp;( {EU_TO_US[size]} )
+                          {size} <span className="text-[10px] ml-0.5">({EU_TO_US[size]})</span>
                         </button>
                       ))}
                     </div>
 
-                    <div className="mb-10">
+                    <div className="flex items-center gap-4 mb-4 md:mb-6">
                       <button 
                         onClick={() => setIsSizeChartOpen(true)}
-                        className="bg-black text-white px-8 py-3 rounded-[4px] font-dm text-[12px] font-bold uppercase tracking-widest hover:bg-km-text-2 transition-colors shadow-sm"
+                        className="flex-1 h-11 bg-black text-white px-2 rounded-[3px] font-dm text-[11px] font-bold uppercase tracking-widest hover:bg-km-text-2 transition-all shadow-sm animate-gentle-float relative z-10"
                       >
                         Size Chart
                       </button>
+                      
+                      <div className="flex items-center h-11 border border-km-border bg-white w-[140px] shrink-0">
+                        <button 
+                          onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                          className="flex-1 h-full text-km-text-3 hover:text-km-text hover:bg-km-surface-2 transition-colors font-dm text-lg"
+                        >
+                          -
+                        </button>
+                        <div className="flex-1 text-center font-dm text-[14px] text-km-text font-medium">
+                          {quantity}
+                        </div>
+                        <button 
+                          onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
+                          className="flex-1 h-full text-km-text-3 hover:text-km-text hover:bg-km-surface-2 transition-colors font-dm text-lg"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Colors */}
                 {product.colors.length > 0 && (
-                  <div className="mb-8">
-                    <h3 className="font-dm text-[11px] tracking-widest uppercase text-km-text-3 font-semibold mb-4">
+                  <div className="mb-6">
+                    <h3 className="font-dm text-[11px] tracking-widest uppercase text-km-text-3 font-semibold mb-3">
                       Select Color
                     </h3>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2">
                       {product.colors.map((color) => (
                         <button
                           key={color}
                           onClick={() => setSelectedColor(color)}
                           className={
                             color === selectedColor
-                              ? "border border-km-text bg-km-text text-white font-dm text-xs py-2.5 px-6 uppercase tracking-widest transition-colors"
-                              : "border border-km-border bg-white text-km-text font-dm text-xs py-2.5 px-6 uppercase tracking-widest hover:border-km-text transition-colors cursor-pointer"
+                              ? "border border-km-text bg-km-text text-white font-dm text-xs py-2 px-5 uppercase tracking-widest transition-colors"
+                              : "border border-km-border bg-white text-km-text font-dm text-xs py-2 px-5 uppercase tracking-widest hover:border-km-text transition-colors cursor-pointer"
                           }
                         >
                           {color}
@@ -287,37 +303,29 @@ const ProductDetail: React.FC = () => {
                   </div>
                 )}
 
-                <div className="flex gap-4 items-end mb-10">
-                  <div className="flex flex-col gap-4 w-[120px]">
-                    <h3 className="font-dm text-[11px] tracking-widest uppercase text-km-text-3 font-semibold">
-                      Quantity
-                    </h3>
-                    <div className="flex items-center h-14 border border-km-border bg-white">
-                      <button 
-                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                        className="flex-1 h-full text-km-text-2 hover:text-km-gold hover:bg-km-surface-2 transition-colors font-dm text-xl"
-                      >
-                        -
-                      </button>
-                      <div className="flex-1 text-center font-dm text-[15px] text-km-text">
-                        {quantity}
-                      </div>
-                      <button 
-                        onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
-                        className="flex-1 h-full text-km-text-2 hover:text-km-gold hover:bg-km-surface-2 transition-colors font-dm text-xl"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  
+                {/* Selection & Action Area Restructured */}
+                <div className="flex flex-col gap-3 mb-6">
                   <button 
                     onClick={handleAddToCart}
-                    className="flex-1 h-16 bg-km-text text-white font-dm text-[14px] tracking-[0.3em] font-bold uppercase transition-all duration-500 hover:bg-km-gold hover:shadow-[0_10px_30px_rgba(201,168,76,0.25)] hover:-translate-y-1 relative overflow-hidden group shadow-lg active:scale-95"
+                    className="w-full h-[50px] border-2 border-[#C9A84C] bg-white text-km-text font-dm text-[12px] tracking-[0.2em] font-bold uppercase transition-all duration-300 animate-btn-shine"
                   >
-                    <span className="relative z-10">Add to Cart</span>
-                    <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+                    Add to Cart
                   </button>
+                  <button 
+                    onClick={() => {
+                      handleAddToCart();
+                      navigate('/checkout');
+                    }}
+                    className="w-full h-[50px] text-white font-dm text-[12px] tracking-[0.2em] font-bold uppercase flex items-center justify-center gap-3 buy-it-now-the-best"
+                  >
+                    <svg className="w-5 h-5 text-km-gold animate-pulse text-gold-shimmer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Buy it Now
+                  </button>
+                </div>
+
+                {/* Description Appears Here Now */}
+                <div className="font-dm text-[#5C5650] text-[14px] leading-relaxed mb-6 whitespace-pre-line">
+                  {product.description}
                 </div>
               </>
             )}
@@ -400,8 +408,10 @@ const ProductDetail: React.FC = () => {
                   {product.images.map((img, i) => (
                     <div key={i} className="min-w-full h-full flex items-center justify-center snap-center p-4">
                       <img 
-                        src={img} 
+                        src={cloudinaryUrl(img, { width: 900 })} 
                         alt={`Fullscreen ${i + 1}`} 
+                        loading="lazy"
+                        decoding="async"
                         className="max-w-full max-h-full object-contain"
                       />
                     </div>

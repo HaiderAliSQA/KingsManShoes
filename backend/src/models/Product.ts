@@ -19,7 +19,8 @@ export interface IProduct extends Document {
     | 'formal-collection'
     | 'peshawari-sandals'
     | 'skechers'
-    | 'slippers';
+    | 'slippers'
+    | 'sandals';
   sizes: IProductSize[];
   colors: string[];
   images: string[];
@@ -86,6 +87,7 @@ const productSchema = new Schema<IProduct>(
         'peshawari-sandals',
         'skechers',
         'slippers',
+        'sandals',
       ],
       lowercase: true,
       trim: true,

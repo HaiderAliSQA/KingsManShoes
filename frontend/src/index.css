@@ -17,9 +17,23 @@
     font-weight: 600;
   }
   ::selection { background: theme('colors.km-gold'); color: white; }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: theme('colors.km-surface-2'); }
-  ::-webkit-scrollbar-thumb { background: theme('colors.km-gold-light'); border-radius: 3px; }
+  
+  /* Extremely Thin & Attractive Custom Scrollbar */
+  ::-webkit-scrollbar { 
+    width: 6px; 
+    height: 2px; /* Super thin for horizontal scrolling */
+  }
+  ::-webkit-scrollbar-track { 
+    background: transparent; 
+  }
+  ::-webkit-scrollbar-thumb { 
+    background: linear-gradient(90deg, #B8860B, #E8C35A, #B8860B);
+    border-radius: 4px; 
+    transition: all 0.3s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1A1714;
+  }
 }
 
 /* ═══════════ COMPONENTS ═══════════ */
@@ -160,13 +174,110 @@
 
 /* Announcement bar scroll */
 @keyframes scrollText {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(-100%); }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
-.scroll-text {
-  display: inline-block;
-  animation: scrollText 20s linear infinite;
+
+@keyframes borderPulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(201, 168, 76, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+}
+.animate-border-pulse {
+  animation: borderPulse 2s infinite;
+}
+
+.marquee-content {
+  display: flex;
+  width: max-content;
+  animation: scrollText 180s linear infinite;
+}
+
+@keyframes deepRedShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.bg-premium-dark {
+  background: linear-gradient(90deg, #110c08, #2e0909, #140505, #2e0909, #110c08);
+  background-size: 400% 100%;
+  animation: deepRedShimmer 25s ease-in-out infinite;
+}
+
+/* ══════════ MASTERPIECE "BUY IT NOW" ══════════ */
+@keyframes theBestGlow {
+  0% { box-shadow: 0 0 10px rgba(201, 168, 76, 0.2), inset 0 0 0px rgba(201, 168, 76, 0); transform: scale(1); }
+  50% { box-shadow: 0 0 25px rgba(201, 168, 76, 0.7), inset 0 0 8px rgba(201, 168, 76, 0.3); transform: scale(1.01); }
+  100% { box-shadow: 0 0 10px rgba(201, 168, 76, 0.2), inset 0 0 0px rgba(201, 168, 76, 0); transform: scale(1); }
+}
+
+@keyframes premiumSweep {
+  0% { transform: translateY(-120%) translateX(-120%) rotate(45deg); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(120%) translateX(120%) rotate(45deg); opacity: 0; }
+}
+
+.buy-it-now-the-best {
+  background: linear-gradient(90deg, #150f0a, #450a0a, #6b0505, #450a0a, #150f0a);
+  background-size: 300% 100%;
+  animation: deepRedShimmer 10s ease-in-out infinite, theBestGlow 1.5s infinite ease-in-out;
+  position: relative;
+  z-index: 10;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  overflow: hidden; /* Ensure sweep is contained */
+}
+
+.buy-it-now-the-best::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: linear-gradient(45deg, transparent 40%, rgba(201, 168, 76, 0.95) 50%, transparent 60%);
+  animation: premiumSweep 1s infinite linear;
+  pointer-events: none;
+  z-index: 11;
+}
+
+/* Add to Cart Subtle Continuous Shine */
+@keyframes buttonShine {
+  0% { transform: translateX(-150%) rotate(45deg); }
+  100% { transform: translateX(150%) rotate(45deg); }
+}
+.animate-btn-shine {
+  position: relative;
+  overflow: hidden;
+  animation: borderPulse 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.animate-btn-shine::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -100%;
+  width: 100%; height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.6), transparent);
+  animation: buttonShine 0.8s infinite linear;
+}
+
+/* Gentle Float for Size Chart */
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+  50% { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(201, 168, 76, 0.3); background-color: #1A1714; }
+}
+.animate-gentle-float {
+  animation: gentleFloat 1s ease-in-out infinite;
+}
+
+.premium-announcement-text {
   white-space: nowrap;
+  background: linear-gradient(90deg, #B8860B 0%, #E8C35A 20%, #FFF0AD 30%, #E8C35A 40%, #B8860B 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 3.5s linear infinite;
+  filter: drop-shadow(0px 3px 6px rgba(245,200,66,0.5));
 }
 
 /* Navbar blur on scroll */
@@ -211,4 +322,66 @@
 
 .category-icon-wrapper {
   @apply flex flex-col items-center justify-center p-3 bg-[#f8f5f0] border border-km-border/30 rounded-lg transition-all duration-300 hover:shadow-md hover:border-km-gold/50;
+}
+
+/* ══════════ FOOTER ANIMATIONS ══════════ */
+.footer-link {
+  position: relative;
+  display: block;
+  padding: 5px 0;
+  padding-left: 0;
+  transition: color 0.25s ease, padding-left 0.25s ease;
+}
+.footer-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 1px;
+  background: #B8860B;
+  transition: width 0.25s ease;
+}
+.footer-link:hover {
+  color: #E8E0D0;
+  padding-left: 8px;
+}
+.footer-link:hover::before {
+  width: 4px;
+}
+
+.footer-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.footer-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.social-btn {
+  transition: border-color 0.3s, background 0.3s, transform 0.2s;
+}
+.social-btn:hover {
+  transform: translateY(-2px);
+}
+
+.footer-col-title::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: #B8860B;
+  margin-top: 8px;
+  transition: width 0.3s ease;
+}
+.footer-col:hover .footer-col-title::after {
+  width: 40px;
+}
+
+.newsletter-input:focus {
+  border-color: #B8860B !important;
+  outline: none;
 }

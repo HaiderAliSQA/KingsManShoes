@@ -16,13 +16,31 @@ import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import NotFound from './pages/NotFound';
 
+import ContactUs from './pages/customer-care/ContactUs';
+import ShippingPolicy from './pages/customer-care/ShippingPolicy';
+import ReturnsExchanges from './pages/customer-care/ReturnsExchanges';
+import TrackOrder from './pages/customer-care/TrackOrder';
+import SizeGuide from './pages/customer-care/SizeGuide';
+
+import { lazy, Suspense } from 'react';
+
 // Admin Pages
-import AdminLogin from './pages/admin/AdminLogin';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminProducts from './pages/admin/AdminProducts';
-import AdminAddProduct from './pages/admin/AdminAddProduct';
-import AdminEditProduct from './pages/admin/AdminEditProduct';
-import AdminOrders from './pages/admin/AdminOrders';
+const AdminLogin      = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminDashboard  = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminProducts   = lazy(() => import('./pages/admin/AdminProducts'));
+const AdminAddProduct = lazy(() => import('./pages/admin/AdminAddProduct'));
+const AdminEditProduct= lazy(() => import('./pages/admin/AdminEditProduct'));
+const AdminOrders     = lazy(() => import('./pages/admin/AdminOrders'));
+
+const adminFallback = (
+  <div style={{
+    display:'flex', alignItems:'center', justifyContent:'center',
+    height:'100vh', fontFamily:'DM Sans', fontSize:'13px',
+    color:'#9C9890', letterSpacing:'2px'
+  }}>
+    LOADING...
+  </div>
+);
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -55,14 +73,14 @@ const App: React.FC = () => {
       />
       <Routes>
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/login" element={<Suspense fallback={adminFallback}><AdminLogin /></Suspense>} />
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="products/add" element={<AdminAddProduct />} />
-          <Route path="products/edit/:id" element={<AdminEditProduct />} />
-          <Route path="orders" element={<AdminOrders />} />
+          <Route index element={<Suspense fallback={adminFallback}><AdminDashboard /></Suspense>} />
+          <Route path="dashboard" element={<Suspense fallback={adminFallback}><AdminDashboard /></Suspense>} />
+          <Route path="products" element={<Suspense fallback={adminFallback}><AdminProducts /></Suspense>} />
+          <Route path="products/add" element={<Suspense fallback={adminFallback}><AdminAddProduct /></Suspense>} />
+          <Route path="products/edit/:id" element={<Suspense fallback={adminFallback}><AdminEditProduct /></Suspense>} />
+          <Route path="orders" element={<Suspense fallback={adminFallback}><AdminOrders /></Suspense>} />
         </Route>
 
         {/* Public Routes with Layout */}
@@ -72,6 +90,12 @@ const App: React.FC = () => {
         <Route path="/cart" element={<Layout><Cart /></Layout>} />
         <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
         <Route path="/order-confirmation/:num" element={<Layout><OrderConfirmation /></Layout>} />
+
+        <Route path="/contact" element={<Layout><ContactUs /></Layout>} />
+        <Route path="/shipping-policy" element={<Layout><ShippingPolicy /></Layout>} />
+        <Route path="/returns-policy" element={<Layout><ReturnsExchanges /></Layout>} />
+        <Route path="/track-order" element={<Layout><TrackOrder /></Layout>} />
+        <Route path="/size-guide" element={<Layout><SizeGuide /></Layout>} />
 
         {/* 404 */}
         <Route path="*" element={<Layout><NotFound /></Layout>} />

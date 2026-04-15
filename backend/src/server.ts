@@ -59,9 +59,11 @@ if (process.env.NODE_ENV !== 'test') {
 
 app.get('/api/health', (_req: Request, res: Response): void => {
   res.status(200).json({
+    status: 'ok',
     success: true,
     message: 'Kings Man Shoes API is running',
     timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
     environment: process.env.NODE_ENV ?? 'development',
   });
 });
