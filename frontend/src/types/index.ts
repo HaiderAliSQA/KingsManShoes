@@ -6,56 +6,26 @@ export interface ProductSize {
 }
 
 export type Category =
-  | 'skechers'
-  | 'new-drops'
-  | 'formal-collection'
-  | 'lace-up'
-  | 'chunky-formals'
   | 'best-selling'
-  | 'casual-collection'
+  | 'formal-collection'
   | 'peshawari-sandals'
-  | 'sandals'
-  | 'slippers'
-  | 'boots'
-  | 'loafers'
-  | 'moccasins'
-  | 'sneakers'
-  | 'monaco';
+  | 'skechers'
+  | 'slippers';
 
 export const CATEGORY_LABELS: Record<Category, string> = {
-  'skechers':           'Skechers',
-  'new-drops':          'New Drops',
-  'formal-collection':  'Formal Collection',
-  'lace-up':            'Lace Up',
-  'chunky-formals':     'Chunky Formals',
   'best-selling':       'Best Selling',
-  'casual-collection':  'Casual Collection',
+  'formal-collection':  'Formal Collection',
   'peshawari-sandals':  'Peshawari Sandals',
-  'sandals':            'Sandals',
+  'skechers':           'Skechers',
   'slippers':           'Slippers',
-  'boots':              'Boots',
-  'loafers':            'Loafers',
-  'moccasins':          'Moccasins',
-  'sneakers':           'Sneakers',
-  'monaco':             'Monaco',
 };
 
 export const CATEGORY_ICONS: Record<Category, string> = {
-  'skechers':           '👟',
-  'new-drops':          '✨',
-  'formal-collection':  '👞',
-  'lace-up':            '🎀',
-  'chunky-formals':     '🥿',
   'best-selling':       '🔥',
-  'casual-collection':  '👟',
+  'formal-collection':  '👞',
   'peshawari-sandals':  '🩴',
-  'sandals':            '🩴',
+  'skechers':           '👟',
   'slippers':           '🥿',
-  'boots':              '🥾',
-  'loafers':            '👞',
-  'moccasins':          '👞',
-  'sneakers':           '👟',
-  'monaco':             '✨',
 };
 
 export interface Product {

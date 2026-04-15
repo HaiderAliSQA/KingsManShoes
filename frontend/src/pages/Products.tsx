@@ -8,21 +8,11 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 
 const SIDEBAR_CATEGORIES = [
   { value: '',                  label: 'All Products' },
-  { value: 'new-drops',         label: 'New Drops' },
-  { value: 'formal-collection', label: 'Formal Collection' },
-  { value: 'lace-up',           label: 'Lace Up' },
-  { value: 'chunky-formals',    label: 'Chunky Formals' },
   { value: 'best-selling',      label: 'Best Selling' },
-  { value: 'casual-collection', label: 'Casual Collection' },
+  { value: 'formal-collection', label: 'Formal Collection' },
   { value: 'peshawari-sandals', label: 'Peshawari Sandals' },
   { value: 'skechers',          label: 'Skechers' },
-  { value: 'sandals',           label: 'Sandals' },
   { value: 'slippers',          label: 'Slippers' },
-  { value: 'boots',             label: 'Boots' },
-  { value: 'loafers',           label: 'Loafers' },
-  { value: 'moccasins',         label: 'Moccasins' },
-  { value: 'sneakers',          label: 'Sneakers' },
-  { value: 'monaco',            label: 'Monaco' },
 ];
 const SIZES = [39, 40, 41, 42, 43, 44, 45, 46];
 const COLORS = ['Black', 'Brown', 'Tan', 'Navy', 'White', 'Burgundy'];

@@ -15,21 +15,11 @@ export interface IProduct extends Document {
   price: number;
   compareAtPrice?: number;
   category:
-    | 'skechers'
-    | 'new-drops'
-    | 'formal-collection'
-    | 'lace-up'
-    | 'chunky-formals'
     | 'best-selling'
-    | 'casual-collection'
+    | 'formal-collection'
     | 'peshawari-sandals'
-    | 'sandals'
-    | 'slippers'
-    | 'boots'
-    | 'loafers'
-    | 'moccasins'
-    | 'sneakers'
-    | 'monaco';
+    | 'skechers'
+    | 'slippers';
   sizes: IProductSize[];
   colors: string[];
   images: string[];
@@ -91,21 +81,11 @@ const productSchema = new Schema<IProduct>(
       type: String,
       required: [true, 'Category is required'],
       enum: [
-        'skechers',
-        'new-drops',
-        'formal-collection',
-        'lace-up',
-        'chunky-formals',
         'best-selling',
-        'casual-collection',
+        'formal-collection',
         'peshawari-sandals',
-        'sandals',
+        'skechers',
         'slippers',
-        'boots',
-        'loafers',
-        'moccasins',
-        'sneakers',
-        'monaco',
       ],
       lowercase: true,
       trim: true,

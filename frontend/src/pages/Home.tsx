@@ -8,11 +8,11 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { Category } from '../types';
 
 const Home: React.FC = () => {
-  const { data: newDropsData, isLoading: loadingNew } = useGetProductsQuery({ category: 'new-drops', limit: 5 });
+  const { data: formalData, isLoading: loadingFormal } = useGetProductsQuery({ category: 'formal-collection', limit: 5 });
   const { data: bestData, isLoading: loadingBest } = useGetProductsQuery({ category: 'best-selling', limit: 5 });
-  const { data: casualData, isLoading: loadingCasual } = useGetProductsQuery({ category: 'casual-collection', limit: 5 });
+  const { data: sandalsData, isLoading: loadingSandals } = useGetProductsQuery({ category: 'peshawari-sandals', limit: 5 });
 
-  const revealRef = useScrollReveal(0.15, [newDropsData, bestData, casualData, loadingNew, loadingBest, loadingCasual]);
+  const revealRef = useScrollReveal(0.15, [formalData, bestData, sandalsData, loadingFormal, loadingBest, loadingSandals]);
 
   const renderProductGrid = (title: string, subtitle: string, data: any, loading: boolean, category: Category) => {
     return (
@@ -77,8 +77,8 @@ const Home: React.FC = () => {
               Handcrafted for the modern visionary. Experience impeccable craftsmanship that commands respect in every room you enter.
             </p>
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6 scroll-reveal stagger-5">
-              <Link to="/products?category=new-drops" className="btn-gold px-10 py-5 btn-magnetic">Shop New Drops</Link>
-              <Link to="/products" className="btn-outline px-10 py-5 btn-magnetic">View Catalogue</Link>
+               <Link to="/products" className="btn-gold px-10 py-5 btn-magnetic">Explore Collection</Link>
+              <Link to="/products?category=best-selling" className="btn-outline px-10 py-5 btn-magnetic">Best Sellers</Link>
             </div>
           </div>
           
@@ -144,9 +144,9 @@ const Home: React.FC = () => {
           {/* Row 1 — 3 LARGE Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {[
-              { id: 'new-drops', title: 'New Drops', bg: '#1A1714', dark: true },
               { id: 'formal-collection', title: 'Formal Collection', bg: '#F5F3EE', dark: false },
-              { id: 'best-selling', title: 'Best Selling', bg: '#1A1714', dark: true }
+              { id: 'best-selling', title: 'Best Selling', bg: '#1A1714', dark: true },
+              { id: 'peshawari-sandals', title: 'Traditionals', bg: '#F5F3EE', dark: false }
             ].map((cat, i) => (
               <Link key={cat.id} to={`/products?category=${cat.id}`} className={`group relative h-[320px] overflow-hidden scroll-reveal scale stagger-${i+1}`}>
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110" style={{ background: cat.bg }}></div>
@@ -164,11 +164,11 @@ const Home: React.FC = () => {
           {/* Row 2 — 5 SMALLER Cards */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[
-              { id: 'skechers', title: 'Skechers' },
-              { id: 'lace-up', title: 'Lace Up' },
-              { id: 'casual-collection', title: 'Casual' },
-              { id: 'peshawari-sandals', title: 'Traditional' },
-              { id: 'boots', title: 'Boots' }
+              { id: 'formal-collection', title: 'Formals' },
+              { id: 'best-selling', title: 'Trending' },
+              { id: 'peshawari-sandals', title: 'Peshawari' },
+              { id: 'new-drops', title: 'New Drops' },
+              { id: 'sale', title: 'Sale' }
             ].map((cat, i) => (
               <Link key={cat.id} to={`/products?category=${cat.id}`} className={`group relative h-[180px] bg-[#FAFAF8] flex flex-col items-center justify-center p-4 border border-km-border/30 transition-all duration-500 hover:bg-[#1A1714] scroll-reveal scale stagger-${i+1}`}>
                 <span className="font-dm text-[11px] font-bold tracking-[0.2em] text-km-text uppercase group-hover:text-km-gold transition-colors text-center">{cat.title}</span>
@@ -179,8 +179,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* SECTION 4 — NEW DROPS */}
-      {renderProductGrid('New Drops', 'Fresh arrivals for the discerning gentleman', newDropsData, loadingNew, 'new-drops')}
+      {/* SECTION 4 — BEST SELLING */}
+      {renderProductGrid('Best Selling', 'Our most iconic and loved silhouettes', bestData, loadingBest, 'best-selling')}
 
       {/* SECTION 5 — FORMAL COLLECTION BANNER */}
       <section className="relative w-full bg-[#1A1714] overflow-hidden">
@@ -195,8 +195,8 @@ const Home: React.FC = () => {
               Precision. Power. Performance. Every formal shoe is a masterpiece of design, engineered for those who never second-guess their steps.
             </p>
             <div className="flex gap-6">
-              <Link to="/products?category=formal-collection" className="btn-gold px-10 py-5">SHOP NOW</Link>
-              <Link to="/products?category=chunky-formals" className="btn-outline border-white text-white hover:bg-white hover:text-[#1A1714] px-10 py-5">CHUNKY STYLES</Link>
+               <Link to="/products?category=formal-collection" className="btn-gold px-10 py-5">SHOP NOW</Link>
+              <Link to="/products" className="btn-outline border-white text-white hover:bg-white hover:text-[#1A1714] px-10 py-5">VIEW ALL</Link>
             </div>
           </div>
           <div className="scroll-reveal-right flex justify-center lg:justify-end">
@@ -208,8 +208,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* SECTION 6 — BEST SELLING */}
-      {renderProductGrid('Best Selling', 'Our most iconic and loved silhouettes', bestData, loadingBest, 'best-selling')}
+      {/* SECTION 6 — FORMAL COLLECTION */}
+      {renderProductGrid('Formal Collection', 'Handcrafted elegance for the modern visionary', formalData, loadingFormal, 'formal-collection')}
 
       {/* SECTION 7 — PESHAWARI SANDALS */}
       <section className="bg-[#F0EDE6] overflow-hidden flex flex-col lg:flex-row">
@@ -235,8 +235,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* SECTION 8 — CASUAL COLLECTION */}
-      {renderProductGrid('Casual Collection', 'Comfort meets unmatched style for daily striding', casualData, loadingCasual, 'casual-collection')}
+      {/* SECTION 8 — TRADITIONAL COLLECTION */}
+      {renderProductGrid('Peshawari Sandals', 'Authentic heritage in every stitch', sandalsData, loadingSandals, 'peshawari-sandals')}
 
       {/* SECTION 9 — NEWSLETTER + WHATSAPP */}
       <section className="bg-[#1A1714] py-32 overflow-hidden relative">

@@ -14,9 +14,7 @@ import { selectToken } from '../../store/authSlice';
 
 const SIZES = [39, 40, 41, 42, 43, 44, 45, 46];
 const CATEGORIES = [
-  'skechers', 'new-drops', 'formal-collection', 'lace-up', 'chunky-formals',
-  'best-selling', 'casual-collection', 'peshawari-sandals', 'sandals', 
-  'slippers', 'boots', 'loafers', 'moccasins', 'sneakers', 'monaco'
+  'best-selling', 'formal-collection', 'peshawari-sandals', 'skechers', 'slippers'
 ] as const;
 
 const productSchema = z.object({
@@ -107,8 +105,8 @@ const AdminEditProduct: React.FC = () => {
         setImages(prev => [...prev, ...newUrls]);
         toast.success(`Uploaded ${newUrls.length} images`);
       }
-    } catch {
-      toast.error('Failed to upload images');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to upload images');
     }
   };
 

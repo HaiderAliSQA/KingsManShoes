@@ -5,9 +5,7 @@ import { useCart } from '../../hooks/useCart';
 import { Category, CATEGORY_ICONS, CATEGORY_LABELS } from '../../types';
 
 const MEGA_MENU_CATEGORIES: Category[] = [
-  'new-drops', 'formal-collection', 'chunky-formals', 'lace-up', 'best-selling',
-  'casual-collection', 'sneakers', 'skechers', 'monaco',
-  'peshawari-sandals', 'sandals', 'slippers', 'boots', 'loafers', 'moccasins'
+  'best-selling', 'formal-collection', 'peshawari-sandals', 'skechers', 'slippers'
 ];
 
 const Navbar: React.FC = () => {
@@ -124,7 +122,7 @@ const Navbar: React.FC = () => {
                 </div>
               </div>
 
-              <Link to="/products?category=new-drops" className="font-dm text-[12px] font-bold tracking-[0.15em] text-km-text hover:text-km-gold transition-colors uppercase">New Arrivals</Link>
+              <Link to="/products" className="font-dm text-[12px] font-bold tracking-[0.15em] text-km-text hover:text-km-gold transition-colors uppercase">New Arrivals</Link>
               <Link to="/products?category=best-selling" className="font-dm text-[12px] font-bold tracking-[0.15em] text-km-gold hover:text-km-text transition-colors uppercase">Trending</Link>
             </div>
 
@@ -219,7 +217,7 @@ const Navbar: React.FC = () => {
                     <Link to="/" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.2em] animate-colorCycle transition-colors">Home</Link>
                     <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.2em] animate-colorCycle transition-colors">Collection</Link>
                  </div>
-                 <Link to="/products?category=new-drops" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.25em] animate-colorCycle transition-colors">New Drops</Link>
+                 <Link to="/products" onClick={() => setMobileOpen(false)} className="font-playfair text-[20px] font-semibold uppercase tracking-[0.25em] animate-colorCycle transition-colors">New Drops</Link>
                  <div className="h-px bg-km-border w-full my-3"></div>
                  <div className="grid grid-cols-2 gap-x-4 gap-y-5">
                   {MEGA_MENU_CATEGORIES.slice(0, 10).map(cat => (
