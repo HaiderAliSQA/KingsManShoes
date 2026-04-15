@@ -20,7 +20,7 @@ const Home: React.FC = () => {
 
   const revealRef = useScrollReveal(0.15, [formalData, activeData, sandalsData, loadingFormal, loadingActive, loadingSandals]);
 
-  const renderProductGrid = (title: string, subtitle: string, data: any, loading: boolean, activeCatStr: string, showCategoryBar = false) => {
+  const renderProductGrid = (title: string, subtitle: string, data: any, loading: boolean, showCategoryBar = false) => {
     return (
       <section className="py-8 lg:py-16 bg-white overflow-hidden border-t border-[#EBEBEB]/50 first-of-type:border-t-0">
         <div className="max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6">
@@ -151,7 +151,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* SECTION 4 — DYNAMIC FILTER GRID (Category Bar Embedded) */}
-      {renderProductGrid('Discover', 'Our most iconic and loved silhouettes', activeData, loadingActive, activeCategory, true)}
+      {renderProductGrid('Discover', 'Our most iconic and loved silhouettes', activeData, loadingActive, true)}
 
       {/* SECTION 5 — FORMAL COLLECTION BANNER */}
       <section className="relative w-full bg-[#1A1714] overflow-hidden">
@@ -180,7 +180,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* SECTION 6 — FORMAL COLLECTION */}
-      {renderProductGrid('Formal Collection', 'Handcrafted elegance for the modern visionary', formalData, loadingFormal, 'formal-collection')}
+      {renderProductGrid('Formal Collection', 'Handcrafted elegance for the modern visionary', formalData, loadingFormal)}
 
       {/* SECTION 7 — PESHAWARI SANDALS */}
       <section className="bg-[#F0EDE6] overflow-hidden flex flex-col lg:flex-row">
@@ -207,7 +207,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* SECTION 8 — TRADITIONAL COLLECTION */}
-      {renderProductGrid('Peshawari Sandals', 'Authentic heritage in every stitch', sandalsData, loadingSandals, 'peshawari-sandals')}
+      {renderProductGrid('Peshawari Sandals', 'Authentic heritage in every stitch', sandalsData, loadingSandals)}
 
       {/* SECTION 9 — NEWSLETTER + WHATSAPP */}
       <section className="bg-[#1A1714] py-32 overflow-hidden relative">
