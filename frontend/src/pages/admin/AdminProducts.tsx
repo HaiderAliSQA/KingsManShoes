@@ -6,6 +6,7 @@ import {
   useToggleVisibilityMutation,
   useToggleDiscontinuedMutation,
   useToggleFeaturedMutation,
+  useUpdateStockMutation,
   useDeleteProductMutation,
 } from '../../store/api/productsApi';
 import toast from 'react-hot-toast';
@@ -14,11 +15,14 @@ import { formatPrice } from '../../utils/formatPrice';
 const AdminProducts: React.FC = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [editingStockId, setEditingStockId] = useState<string | null>(null);
+  const [stockInputValue, setStockInputValue] = useState<string>('');
   
   const { data, isLoading } = useGetAdminProductsQuery({ page, limit: 12, search });
   const [toggleVisibility] = useToggleVisibilityMutation();
   const [toggleDiscontinued] = useToggleDiscontinuedMutation();
   const [toggleFeatured] = useToggleFeaturedMutation();
+  const [updateStock] = useUpdateStockMutation();
   const [deleteProduct] = useDeleteProductMutation();
 
   const products = data?.data?.products || [];
@@ -32,6 +36,26 @@ const AdminProducts: React.FC = () => {
       toast.success(`Product ${action} updated`);
     } catch {
       toast.error(`Failed to update ${action}`);
+    }
+  };
+
+  const handleStockEdit = (id: string, currentStock: number) => {
+    setEditingStockId(id);
+    setStockInputValue(String(currentStock));
+  };
+
+  const handleStockSave = async (id: string) => {
+    const newStock = parseInt(stockInputValue, 10);
+    if (isNaN(newStock) || newStock < 0) {
+      toast.error('Stock must be a valid non-negative number');
+      return;
+    }
+    try {
+      await updateStock({ id, stock: newStock }).unwrap();
+      toast.success(`Stock updated to ${newStock}`);
+      setEditingStockId(null);
+    } catch {
+      toast.error('Failed to update stock');
     }
   };
 
@@ -124,11 +148,45 @@ const AdminProducts: React.FC = () => {
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex flex-col gap-1">
-                        <span className={`text-[11px] font-bold uppercase tracking-wider ${product.stock > 10 ? 'text-emerald-600' : 'text-km-error'}`}>
-                          {product.stock} Units
-                        </span>
+                        {editingStockId === product._id ? (
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              min="0"
+                              value={stockInputValue}
+                              onChange={(e) => setStockInputValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleStockSave(product._id);
+                                if (e.key === 'Escape') setEditingStockId(null);
+                              }}
+                              autoFocus
+                              className="w-20 border border-km-gold px-2 py-1 text-[12px] text-km-text font-bold outline-none"
+                            />
+                            <button
+                              onClick={() => handleStockSave(product._id)}
+                              className="text-[10px] bg-[#1A1714] text-white px-2 py-1 font-bold"
+                            >✓</button>
+                            <button
+                              onClick={() => setEditingStockId(null)}
+                              className="text-[10px] border border-km-border px-2 py-1 text-km-text-3 font-bold"
+                            >✕</button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleStockEdit(product._id, product.stock)}
+                            title="Click to edit stock"
+                            className="text-left group/stock"
+                          >
+                            <span className={`text-[11px] font-bold uppercase tracking-wider underline-offset-2 group-hover/stock:underline ${
+                              product.stock === 0 ? 'text-red-600' : product.stock <= 5 ? 'text-amber-600' : 'text-emerald-600'
+                            }`}>
+                              {product.stock} Units
+                            </span>
+                            <span className="block text-[9px] text-km-text-3 mt-0.5">click to edit</span>
+                          </button>
+                        )}
                         <div className="w-24 h-1 bg-km-border rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full ${product.stock > 10 ? 'bg-emerald-500' : 'bg-km-error'}`} style={{ width: `${Math.min(product.stock, 100)}%` }}></div>
+                          <div className={`h-full rounded-full ${product.stock > 10 ? 'bg-emerald-500' : product.stock > 0 ? 'bg-amber-400' : 'bg-red-500'}`} style={{ width: `${Math.min(product.stock, 100)}%` }}></div>
                         </div>
                       </div>
                     </td>

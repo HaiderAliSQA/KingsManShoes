@@ -14,9 +14,22 @@ const fileFilter = (
   file: Express.Multer.File,
   cb: multer.FileFilterCallback
 ): void => {
-  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif', 'image/heic', 'image/heif'];
+  const allowedMimeTypes = [
+    'image/jpeg', 
+    'image/jpg', 
+    'image/png', 
+    'image/webp', 
+    'image/avif', 
+    'image/heic', 
+    'image/heif',
+    'application/octet-stream' // Allow generic binary stream (fallback)
+  ];
 
-  if (allowedMimeTypes.includes(file.mimetype)) {
+  // Extension check (lowercase)
+  const allowedExtensions = /\.(jpg|jpeg|png|webp|avif|heic|heif)$/i;
+  const hasValidExtension = allowedExtensions.test(file.originalname);
+
+  if (allowedMimeTypes.includes(file.mimetype) || hasValidExtension) {
     cb(null, true);
   } else {
     cb(new Error(`Unsupported file type: ${file.mimetype}. Allowed: JPEG, PNG, WebP, AVIF, HEIC`));
@@ -123,17 +136,21 @@ router.post('/images', authMiddleware, (req: Request, res: Response): void => {
     }
 
     try {
-      const uploadPromises = files.map((file) =>
-        uploadToCloudinary(file.buffer, file.originalname)
-      );
+      console.log('Starting Cloudinary upload for', files.length, 'files...');
+      const uploadPromises = files.map((file, index) => {
+        console.log(`Uploading file ${index + 1}/${files.length}: ${file.originalname}`);
+        return uploadToCloudinary(file.buffer, file.originalname);
+      });
 
       const results = await Promise.all(uploadPromises);
+      console.log('Successfully uploaded all files to Cloudinary');
 
       res.status(200).json({
         success: true,
         data: results.map((r) => ({ url: r.url, publicId: r.publicId })),
       });
     } catch (uploadError) {
+      console.error('Cloudinary upload failed:', (uploadError as Error).message);
       res.status(500).json({
         success: false,
         message: 'Failed to upload images to Cloudinary',

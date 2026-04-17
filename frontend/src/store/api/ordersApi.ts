@@ -69,6 +69,11 @@ export const ordersApi = createApi({
       providesTags: (_result, _err, id) => [{ type: 'Order', id }],
     }),
 
+    getOrderByNumber: builder.query<ApiResponse<Order>, string>({
+      query: (orderNumber) => `/orders/by-number/${orderNumber}`,
+      providesTags: (_result, _err, orderNumber) => [{ type: 'Order', id: orderNumber }],
+    }),
+
     updateOrderStatus: builder.mutation<
       ApiResponse<Order>,
       { id: string; orderStatus?: string; transactionId?: string }
@@ -87,5 +92,6 @@ export const {
   usePlaceOrderMutation,
   useGetOrdersQuery,
   useGetOrderByIdQuery,
+  useGetOrderByNumberQuery,
   useUpdateOrderStatusMutation,
 } = ordersApi;

@@ -33,7 +33,7 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
-  const { items, subtotal, deliveryCharges, total, clearCart } = useCart();
+  const { items, subtotal, deliveryCharges, total } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'jazzcash' | 'easypaisa' | 'bank_transfer'>('cod');
   const [placeOrder, { isLoading, error }] = usePlaceOrderMutation();
@@ -80,7 +80,6 @@ const Checkout: React.FC = () => {
       const result = await placeOrder(orderData).unwrap();
       
       if (result.success && result.data?.order) {
-        clearCart();
         navigate(`/order-confirmation/${result.data.order.orderNumber}`);
       }
     } catch (err: any) {

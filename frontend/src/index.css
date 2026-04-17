@@ -385,3 +385,26 @@
   border-color: #B8860B !important;
   outline: none;
 }
+
+/* ═══════════ NEW ORDER CONFIRMATION ANIMATIONS ═══════════ */
+@keyframes drawCircle {
+  from { stroke-dashoffset: 213; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes drawCheck {
+  from { stroke-dashoffset: 50; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.ty-animate-1 { animation: fadeInUp 0.5s ease 1.0s both; }
+.ty-animate-2 { animation: fadeInUp 0.5s ease 1.1s both; }
+.ty-animate-3 { animation: fadeInUp 0.5s ease 1.2s both; }
+.ty-animate-4 { animation: fadeIn 0.6s ease 1.3s both; }
+.ty-animate-5 { animation: fadeIn 0.6s ease 1.4s both; }

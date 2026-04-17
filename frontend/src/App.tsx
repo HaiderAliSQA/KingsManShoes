@@ -89,7 +89,7 @@ const App: React.FC = () => {
         <Route path="/product/:slug" element={<Layout><ProductDetail /></Layout>} />
         <Route path="/cart" element={<Layout><Cart /></Layout>} />
         <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
-        <Route path="/order-confirmation/:num" element={<Layout><OrderConfirmation /></Layout>} />
+        <Route path="/order-confirmation/:orderNumber" element={<Layout><OrderConfirmation /></Layout>} />
 
         <Route path="/contact" element={<Layout><ContactUs /></Layout>} />
         <Route path="/shipping-policy" element={<Layout><ShippingPolicy /></Layout>} />

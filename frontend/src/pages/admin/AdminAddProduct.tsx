@@ -11,7 +11,21 @@ import toast from 'react-hot-toast';
 
 const SIZES = [39, 40, 41, 42, 43, 44, 45, 46];
 const CATEGORIES = [
-  'best-selling', 'formal-collection', 'peshawari-sandals', 'skechers', 'slippers'
+  'skechers',
+  'new-drops',
+  'formal-collection',
+  'lace-up',
+  'chunky-formals',
+  'best-selling',
+  'casual-collection',
+  'peshawari-sandals',
+  'sandals',
+  'slippers',
+  'boots',
+  'loafers',
+  'moccasins',
+  'sneakers',
+  'monaco',
 ] as const;
 
 const productSchema = z.object({
@@ -19,7 +33,7 @@ const productSchema = z.object({
   description: z.string().min(10, 'Description needs to be longer'),
   price: z.number().min(1, 'Price must be greater than 0'),
   compareAtPrice: z.number().optional().nullable(),
-  category: z.enum(CATEGORIES),
+  category: z.string().min(1, 'Category is required'),
   stock: z.number().min(0, 'Stock cannot be negative'),
   isVisible: z.boolean(),
   isFeatured: z.boolean(),
@@ -57,21 +71,26 @@ const AdminAddProduct: React.FC = () => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    // Build FormData correctly — field name must match multer .array('images', 8)
     const formData = new FormData();
-    Array.from(files).forEach(file => {
-      formData.append('images', file);
+    Array.from(files).forEach((file) => {
+      formData.append('images', file); // field name = 'images' (plural)
     });
 
     try {
       const result = await uploadImages(formData).unwrap();
       if (result.success && result.data) {
         const newUrls = result.data.map((r: any) => r.url);
-        setImages(prev => [...prev, ...newUrls]);
-        toast.success(`Uploaded ${newUrls.length} images`);
+        setImages((prev) => [...prev, ...newUrls]);
+        toast.success(`${newUrls.length} image(s) uploaded`);
       }
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to upload images');
+      console.error('Upload error:', err);
+      toast.error(err?.data?.message || 'Upload failed — check console');
     }
+
+    // Reset input so same file can be re-selected
+    e.target.value = '';
   };
 
   const handleRemoveImage = async (url: string) => {
@@ -115,11 +134,12 @@ const AdminAddProduct: React.FC = () => {
     };
 
     try {
-      await createProduct(payload).unwrap();
+      await createProduct(payload as any).unwrap();
       toast.success('Product created successfully');
       navigate('/admin/products');
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to create product');
+      const msg = err?.data?.message || err?.message || 'Failed to create product';
+      toast.error(msg);
     }
   };
 

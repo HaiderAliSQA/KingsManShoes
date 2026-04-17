@@ -133,6 +133,18 @@ export const productsApi = createApi({
       invalidatesTags: ['Product'],
     }),
 
+    updateStock: builder.mutation<
+      ApiResponse<{ id: string; stock: number }>,
+      { id: string; stock: number }
+    >({
+      query: ({ id, stock }) => ({
+        url: `/products/${id}/stock`,
+        method: 'PATCH',
+        body: { stock },
+      }),
+      invalidatesTags: ['Product'],
+    }),
+
     deleteProduct: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
         url: `/products/${id}`,
@@ -155,5 +167,6 @@ export const {
   useToggleDiscontinuedMutation,
   useToggleFeaturedMutation,
   useToggleSizeBlockMutation,
+  useUpdateStockMutation,
   useDeleteProductMutation,
 } = productsApi;

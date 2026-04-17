@@ -207,6 +207,27 @@ router.get('/admin/all', authMiddleware, async (req: Request, res: Response): Pr
   }
 });
 
+// GET /api/products/admin/:id - ADMIN ONLY — single product by MongoDB _id
+router.get('/admin/:id', authMiddleware, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params as { id: string };
+    const product = await Product.findById(id).lean();
+
+    if (!product) {
+      res.status(404).json({ success: false, message: 'Product not found' });
+      return;
+    }
+
+    res.status(200).json({ success: true, data: product });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch product',
+      error: (error as Error).message,
+    });
+  }
+});
+
 // GET /api/products/:slug - PUBLIC — single product by slug
 router.get('/:slug', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -466,6 +487,48 @@ router.patch('/:id/sizes/:sizeValue/block', authMiddleware, async (req: Request,
     res.status(500).json({
       success: false,
       message: 'Failed to toggle size block',
+      error: (error as Error).message,
+    });
+  }
+});
+
+// PATCH /api/products/:id/stock - ADMIN ONLY — update stock quantity
+router.patch('/:id/stock', authMiddleware, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params as { id: string };
+    const { stock } = req.body as { stock: number };
+
+    if (stock === undefined || stock === null) {
+      res.status(400).json({ success: false, message: 'stock field is required' });
+      return;
+    }
+
+    const stockNum = Number(stock);
+    if (isNaN(stockNum) || stockNum < 0) {
+      res.status(400).json({ success: false, message: 'Stock must be a non-negative number' });
+      return;
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { $set: { stock: stockNum } },
+      { new: true, runValidators: true }
+    );
+
+    if (!product) {
+      res.status(404).json({ success: false, message: 'Product not found' });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { id: product._id.toString(), stock: product.stock },
+      message: `Stock updated to ${stockNum}`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update stock',
       error: (error as Error).message,
     });
   }

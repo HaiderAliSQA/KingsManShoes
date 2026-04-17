@@ -103,7 +103,8 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         return;
       }
 
-      const product = await Product.findById(item.productId);
+      // Use lean() to bypass getter transformations — ensures raw stock value from DB
+      const product = await Product.findById(item.productId).lean();
 
       if (!product) {
         res.status(400).json({
@@ -304,6 +305,27 @@ router.get('/', authMiddleware, async (req: Request, res: Response): Promise<voi
       message: 'Failed to fetch orders',
       error: (error as Error).message,
     });
+  }
+});
+
+// GET /api/orders/by-number/:orderNumber — find by orderNumber field
+router.get('/by-number/:orderNumber', async (req: Request, res: Response, next): Promise<void> => {
+  try {
+    const order = await Order.findOne({
+      orderNumber: req.params.orderNumber
+    }).populate('items.productId', 'name images')
+
+    if (!order) {
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    res.json({ success: true, data: order });
+  } catch (error) {
+    next(error);
   }
 });
 

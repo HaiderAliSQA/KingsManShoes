@@ -14,7 +14,21 @@ import { selectToken } from '../../store/authSlice';
 
 const SIZES = [39, 40, 41, 42, 43, 44, 45, 46];
 const CATEGORIES = [
-  'best-selling', 'formal-collection', 'peshawari-sandals', 'skechers', 'slippers'
+  'skechers',
+  'new-drops',
+  'formal-collection',
+  'lace-up',
+  'chunky-formals',
+  'best-selling',
+  'casual-collection',
+  'peshawari-sandals',
+  'sandals',
+  'slippers',
+  'boots',
+  'loafers',
+  'moccasins',
+  'sneakers',
+  'monaco',
 ] as const;
 
 const productSchema = z.object({
@@ -22,7 +36,7 @@ const productSchema = z.object({
   description: z.string().min(10, 'Description needs to be longer'),
   price: z.number().min(1, 'Price must be greater than 0'),
   compareAtPrice: z.number().optional().nullable(),
-  category: z.enum(CATEGORIES),
+  category: z.string().min(1, 'Category is required'),
   stock: z.number().min(0, 'Stock cannot be negative'),
   isVisible: z.boolean(),
   isFeatured: z.boolean(),
@@ -53,7 +67,7 @@ const AdminEditProduct: React.FC = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/admin/${id}`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5002'}/api/products/admin/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const product = res.data.data;
@@ -76,8 +90,10 @@ const AdminEditProduct: React.FC = () => {
         setSelectedSizes(
           product.sizes.filter((s: any) => !s.isBlocked).map((s: any) => s.size)
         );
-      } catch (err) {
-        toast.error('Failed to load product for editing');
+      } catch (err: any) {
+        const msg = err?.response?.data?.message || err?.message || 'Failed to load product';
+        console.error('Edit product fetch error:', err);
+        toast.error(msg);
         navigate('/admin/products');
       } finally {
         setInitialLoading(false);
@@ -94,20 +110,23 @@ const AdminEditProduct: React.FC = () => {
     if (!files || files.length === 0) return;
 
     const formData = new FormData();
-    Array.from(files).forEach(file => {
-      formData.append('images', file);
+    Array.from(files).forEach((file) => {
+      formData.append('images', file); // must match multer field name
     });
 
     try {
       const result = await uploadImages(formData).unwrap();
       if (result.success && result.data) {
         const newUrls = result.data.map((r: any) => r.url);
-        setImages(prev => [...prev, ...newUrls]);
-        toast.success(`Uploaded ${newUrls.length} images`);
+        setImages((prev) => [...prev, ...newUrls]);
+        toast.success(`${newUrls.length} image(s) uploaded`);
       }
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to upload images');
+      console.error('Upload error:', err);
+      toast.error(err?.data?.message || 'Upload failed');
     }
+
+    e.target.value = '';
   };
 
   const handleRemoveImage = async (url: string) => {
@@ -151,7 +170,7 @@ const AdminEditProduct: React.FC = () => {
     };
 
     try {
-      await updateProduct({ id: id as string, data: payload }).unwrap();
+      await updateProduct({ id: id as string, data: payload as any }).unwrap();
       toast.success('Product updated successfully');
       navigate('/admin/products');
     } catch (err: any) {
