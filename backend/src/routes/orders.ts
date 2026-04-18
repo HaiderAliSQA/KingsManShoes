@@ -260,9 +260,24 @@ router.get('/', authMiddleware, async (req: Request, res: Response): Promise<voi
       orderStatus,
       paymentMethod,
       search,
+      dateFrom,
+      dateTo,
     } = req.query as Record<string, string | undefined>;
 
     const query: Record<string, unknown> = {};
+
+    if (dateFrom) {
+      query['createdAt'] = {
+        ...((query['createdAt'] as object) || {}),
+        $gte: new Date(dateFrom + 'T00:00:00.000Z'),
+      };
+    }
+    if (dateTo) {
+      query['createdAt'] = {
+        ...((query['createdAt'] as object) || {}),
+        $lte: new Date(dateTo + 'T23:59:59.999Z'),
+      };
+    }
 
     if (orderStatus && orderStatus !== 'all') {
       query['orderStatus'] = orderStatus;

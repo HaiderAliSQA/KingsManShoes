@@ -145,6 +145,11 @@ export const productsApi = createApi({
       invalidatesTags: ['Product'],
     }),
 
+    getLowStockProducts: builder.query<ApiResponse<Product[]>, void>({
+      query: () => '/products/admin/low-stock',
+      providesTags: ['Product'],
+    }),
+
     deleteProduct: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
         url: `/products/${id}`,
@@ -161,6 +166,7 @@ export const {
   useGetNewArrivalsQuery,
   useGetProductBySlugQuery,
   useGetAdminProductsQuery,
+  useGetLowStockProductsQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
   useToggleVisibilityMutation,

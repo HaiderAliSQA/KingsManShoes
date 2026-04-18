@@ -14,11 +14,12 @@ import { formatPrice } from '../../utils/formatPrice';
 
 const AdminProducts: React.FC = () => {
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
   const [editingStockId, setEditingStockId] = useState<string | null>(null);
   const [stockInputValue, setStockInputValue] = useState<string>('');
   
-  const { data, isLoading } = useGetAdminProductsQuery({ page, limit: 12, search });
+  const { data, isLoading } = useGetAdminProductsQuery({ page, limit, search });
   const [toggleVisibility] = useToggleVisibilityMutation();
   const [toggleDiscontinued] = useToggleDiscontinuedMutation();
   const [toggleFeatured] = useToggleFeaturedMutation();
@@ -71,36 +72,41 @@ const AdminProducts: React.FC = () => {
   };
 
   return (
-    <div className="animate-fadeIn font-dm">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-        <div>
-          <h1 className="font-playfair text-km-text text-[36px] font-bold tracking-tight">Products Inventory</h1>
-          <p className="text-km-text-3 mt-1 tracking-[0.2em] text-[11px] uppercase font-bold">Catalogue Management • {data?.data?.total || 0} items</p>
-        </div>
-        <Link
-          to="/admin/products/add"
-          className="btn-gold px-10 py-4 text-[11px] btn-magnetic"
-        >
-          ADD NEW MASTERPIECE
-        </Link>
-      </div>
+    <div className="animate-fadeIn font-dm relative">
+      {/* 1. FIXED PAGE HEADER & TOOLBAR */}
+      <div className="sticky top-0 z-30 bg-[#F7F5F0] pb-4 pt-4 px-6 border-b border-km-border shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="font-playfair text-km-text text-[32px] font-bold tracking-tight">Products Inventory</h1>
+            <p className="text-km-text-3 tracking-[0.2em] text-[10px] uppercase font-bold">Catalogue Management • {data?.data?.total || 0} items</p>
+          </div>
 
-      <div className="bg-white border border-km-border shadow-sm overflow-hidden flex flex-col">
-        {/* Toolbar */}
-        <div className="p-8 border-b border-km-border flex flex-col sm:flex-row gap-6 justify-between items-center bg-[#FAFAF8]">
-          <div className="relative w-full sm:w-96">
-            <input
-              type="text"
-              placeholder="Search by name, category or slug..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white border border-km-border px-12 py-4 text-[13px] font-dm text-km-text placeholder-km-text-3 outline-none focus:border-km-gold transition-all"
-            />
-            <svg className="w-5 h-5 text-km-text-3 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+          <div className="flex flex-col sm:flex-row gap-4 flex-1 max-w-2xl justify-end">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search by name, category or slug..."
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                className="w-full bg-white border border-km-border px-10 py-3 text-[13px] font-dm text-km-text placeholder-km-text-3 outline-none focus:border-km-gold transition-all shadow-sm"
+              />
+              <svg className="w-4 h-4 text-km-text-3 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            
+            <Link
+              to="/admin/products/add"
+              className="bg-[#1A1714] text-[#B8860B] px-6 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-[#B8860B] hover:text-[#1A1714] transition-all text-center whitespace-nowrap"
+            >
+              ADD NEW MASTERPIECE
+            </Link>
           </div>
         </div>
+      </div>
+
+      <div className="px-6 pb-12">
+        <div className="bg-white border border-km-border shadow-sm flex flex-col min-h-[500px]">
 
         {/* Table */}
         <div className="overflow-x-auto min-h-[400px]">
@@ -113,22 +119,26 @@ const AdminProducts: React.FC = () => {
               <p className="text-km-text-3 text-[13px] tracking-widest uppercase font-medium">Try different keywords or clear search.</p>
             </div>
           ) : (
-            <table className="w-full text-left text-[14px] whitespace-nowrap">
-              <thead className="bg-[#FAFAF8] text-km-text-3 uppercase tracking-[0.2em] text-[10px] font-bold border-b border-km-border">
+            <table className="w-full text-left text-[14px] whitespace-nowrap border-separate border-spacing-0">
+              <thead className="bg-[#FAFAF8] text-km-text-3 uppercase tracking-[0.2em] text-[10px] font-bold border-b border-km-border sticky top-[80px] z-20 shadow-xs">
                 <tr>
-                  <th className="px-8 py-5">Product Details</th>
-                  <th className="px-8 py-5">Unit Price</th>
-                  <th className="px-8 py-5">Inventory</th>
-                  <th className="px-8 py-5">Visibility</th>
-                  <th className="px-8 py-5">Featured</th>
-                  <th className="px-8 py-5">Discontinued</th>
-                  <th className="px-8 py-5 text-right">Actions</th>
+                  <th className="px-4 py-5 w-10 text-center text-km-gold">#</th>
+                  <th className="px-4 py-5">Product Details</th>
+                  <th className="px-4 py-5">Unit Price</th>
+                  <th className="px-4 py-5">Inventory</th>
+                  <th className="px-4 py-5">Visibility</th>
+                  <th className="px-4 py-5">Featured</th>
+                  <th className="px-4 py-5">Discontinued</th>
+                  <th className="px-4 py-5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-km-border">
-                {products.map(product => (
+                {products.map((product, index) => (
                   <tr key={product._id} className={`hover:bg-km-surface-2 transition-colors group ${product.isDiscontinued ? 'opacity-40 grayscale-[0.5]' : ''}`}>
-                    <td className="px-8 py-6">
+                    <td className="px-4 py-6 text-center text-km-text-3 font-bold text-[11px]">
+                      {(page - 1) * limit + index + 1}
+                    </td>
+                    <td className="px-4 py-6">
                       <div className="flex items-center gap-6">
                         <div className="w-16 h-16 bg-[#F5F3EE] p-1 border border-km-border group-hover:border-km-gold/50 transition-colors">
                           {product.images[0] ? (
@@ -143,10 +153,10 @@ const AdminProducts: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-km-text font-bold font-playfair text-[18px]">
+                    <td className="px-4 py-6 text-km-text font-bold font-playfair text-[18px]">
                       {formatPrice(product.price)}
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-4 py-6">
                       <div className="flex flex-col gap-1">
                         {editingStockId === product._id ? (
                           <div className="flex items-center gap-1">
@@ -190,22 +200,22 @@ const AdminProducts: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-4 py-6">
                       <button onClick={() => handleToggle(product._id, 'visibility')} className={`w-12 h-6 rounded-full relative transition-all duration-300 ${product.isVisible ? 'bg-km-text' : 'bg-km-border'}`}>
                         <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm ${product.isVisible ? 'left-[26px]' : 'left-1'}`} />
                       </button>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-4 py-6">
                       <button onClick={() => handleToggle(product._id, 'featured')} className={`w-12 h-6 rounded-full relative transition-all duration-300 ${product.isFeatured ? 'bg-km-gold' : 'bg-km-border'}`}>
                         <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm ${product.isFeatured ? 'left-[26px]' : 'left-1'}`} />
                       </button>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-4 py-6">
                       <button onClick={() => handleToggle(product._id, 'discontinued')} className={`w-12 h-6 rounded-full relative transition-all duration-300 ${product.isDiscontinued ? 'bg-km-error' : 'bg-km-border'}`}>
                         <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm ${product.isDiscontinued ? 'left-[26px]' : 'left-1'}`} />
                       </button>
                     </td>
-                    <td className="px-8 py-6 text-right">
+                    <td className="px-4 py-6 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity">
                         <Link to={`/admin/products/edit/${product._id}`} className="bg-white p-2.5 border border-km-border hover:border-km-gold hover:text-km-gold transition-all shadow-sm" title="Edit">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -222,31 +232,48 @@ const AdminProducts: React.FC = () => {
           )}
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="p-8 border-t border-km-border flex justify-between items-center bg-[#FAFAF8]">
-            <span className="text-[11px] text-km-text-3 font-bold uppercase tracking-[0.2em]">Showing Page {page} of {totalPages}</span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="w-12 h-12 flex items-center justify-center border border-km-border bg-white text-km-text hover:bg-[#1A1714] hover:text-white disabled:opacity-20 transition-all font-bold"
+        {/* 2. ADVANCED PAGINATION FOOTER */}
+        <div className="p-4 border-t border-km-border flex flex-col md:flex-row justify-between items-center gap-6 bg-[#FAFAF8]">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <span className="text-[11px] text-km-text-3 font-black uppercase tracking-[0.2em]">
+              Showing Page {Math.max(0, page - 1)} of {Math.max(0, totalPages - 1)}
+            </span>
+            
+            <div className="flex items-center gap-3 border-l border-km-border pl-6">
+              <span className="text-[10px] font-black uppercase tracking-widest text-km-text-3">Rows:</span>
+              <select
+                value={limit}
+                onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+                className="bg-white border border-km-border text-[11px] font-black px-3 py-1 outline-none focus:border-km-gold transition-colors cursor-pointer"
               >
-                &larr;
-              </button>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="w-12 h-12 flex items-center justify-center border border-km-border bg-white text-km-text hover:bg-[#1A1714] hover:text-white disabled:opacity-20 transition-all font-bold"
-              >
-                &rarr;
-              </button>
+                {[10, 20, 30, 50, 100].map(val => (
+                  <option key={val} value={val}>{val}</option>
+                ))}
+              </select>
             </div>
           </div>
-        )}
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="w-12 h-12 flex items-center justify-center border border-km-border bg-white text-km-text hover:bg-[#1A1714] hover:text-white disabled:opacity-20 transition-all font-bold"
+            >
+              &larr;
+            </button>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="w-12 h-12 flex items-center justify-center border border-km-border bg-white text-km-text hover:bg-[#1A1714] hover:text-white disabled:opacity-20 transition-all font-bold"
+            >
+              &rarr;
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default AdminProducts;

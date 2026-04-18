@@ -207,6 +207,26 @@ router.get('/admin/all', authMiddleware, async (req: Request, res: Response): Pr
   }
 });
 
+// GET /api/products/admin/low-stock - ADMIN ONLY
+router.get('/admin/low-stock', authMiddleware, async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const products = await Product.find({ stock: { $lte: 10 } })
+      .sort({ stock: 1 })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      data: products
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch low stock products',
+      error: (error as Error).message,
+    });
+  }
+});
+
 // GET /api/products/admin/:id - ADMIN ONLY — single product by MongoDB _id
 router.get('/admin/:id', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   try {

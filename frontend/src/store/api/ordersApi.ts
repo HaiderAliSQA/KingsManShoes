@@ -55,6 +55,8 @@ export const ordersApi = createApi({
         orderStatus?: string;
         paymentMethod?: string;
         search?: string;
+        dateFrom?: string;
+        dateTo?: string;
       }
     >({
       query: (params) => ({
