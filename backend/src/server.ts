@@ -28,6 +28,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL ?? 'http://localhost:3000',
   'https://kingsman.vercel.app',
   'https://kingsmanshoes.vercel.app',
+  'https://kings-man-shoes.vercel.app',
 ];
 
 app.use(cors({
